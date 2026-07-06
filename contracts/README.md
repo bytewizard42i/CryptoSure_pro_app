@@ -1,18 +1,19 @@
-# CryptoSure — Contracts (design-only)
+# CryptoSure — Contracts (design stubs complete)
 
-**No `.compact` files yet.** This directory will hold the CryptoSure Compact contracts.
-Per DIDzM house convention, every contract is drafted, validated via the Midnight MCP
-(`midnight-compile-contract` in `skipZk` mode), then compiled locally with `compact compile`
-**before** it is committed here.
+**No `.compact` files yet.** Design stubs are written for all 4 contracts
+(see the `.md` files below). Per DIDzM house convention, each contract is
+drafted, validated via the Midnight MCP (`midnight-compile-contract` in
+`skipZk` mode), then compiled locally with `compact compile` **before** any
+`.compact` file is committed here.
 
-Planned contracts (see `../docs/ARCHITECTURE.md`):
+## Design Stubs
 
-| Contract | Role | Key patterns |
-|----------|------|--------------|
-| `PremiumPool.compact` | Shielded premium pool + payout | Treasury/Pot, Escrow |
-| `PolicyRegistry.compact` | Policy commitments + lifecycle + underwriting cap gate | State Machine, Credential Verification, Selective Disclosure |
-| `EduCertifier.compact` | CryptoSure-EDU certs + holder-signed activation | TrustedIssuerRegistry consumer, attestation, ZK acceptance proof |
-| `ClaimEngine.compact` | Claims + anti-double-claim + payout | Nullifier (SCIFz), Selective Disclosure |
+| File | Contract | Circuits | Key integrations |
+|------|----------|----------|-------------------|
+| `PremiumPool.md` | Shielded premium pool + payout | 6 (deposit_premium, deposit_lp, authorize_payout, release_payout, deny_payout, withdraw_lp) | DIDz score band proof, ZKSplunk events |
+| `PolicyRegistry.md` | Policy commitments + lifecycle + underwriting cap gate | 5 (buy_policy, activate_policy, lapse_policy, get_policy_status, verify_policy_for_claim) | DIDz `prove_score_at_least`, AgenticDID scoped grants, RWAz entries, EduCertifier |
+| `EduCertifier.md` | CryptoSure-EDU certs + holder-signed activation | 5 (issue_cert, verify_cert, verify_cert_for_scope, revoke_cert, list_modules) | DIDz `TrustedIssuerRegistry`, `attest_to_did`, non-delegable holder signature |
+| `ClaimEngine.md` | Claims + anti-double-claim + payout | 7 (submit_claim, assign_adjuster, submit_forensic_report, approve_claim, deny_claim, confirm_payout, dispute_claim) | SCIFz nullifier, selective disclosure, forensic partner integration, ZKSplunk |
 
 Shared circuit (coordinate in the DIDz repo, not here):
 - `prove_score_at_least(...)` — the DIDz credit-score band proof consumed by underwriting.

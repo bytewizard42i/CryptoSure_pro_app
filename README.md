@@ -129,16 +129,24 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 | `docs/FORENSIC_RECOVERY.md` | Crypto immutability/trackability as natural insurance fit; forensic recovery pipeline + case studies. |
 | `docs/GAMING_ASSET_INSURANCE.md` | Less-regulated pilot: insuring in-game digital assets against accidental loss. |
 | `docs/ECOSYSTEM_COORDINATION.md` | How DIDz + AgenticDID + RWAz + ZKSplunk form the cornerstone of CryptoSure opsec and forensics. |
-| `contracts/` | Compact contract design (pool, policy, EDU cert, claim). Design-only for now. |
+| `docs/DEMOLAND_VS_REALDEAL.md` | demoLand vs realDeal convention: provider architecture, mode switching, ecosystem connections. |
+| `docs/ONBOARDING_TEMPLATE.md` | 5-step new client onboarding: DIDz identity → coverage → EDU → agent delegation → confirm. |
+| `docs/AI_INTEGRATION.md` | Phased AI plan: rule-based pre-screening → LLM recommendations → conversational assistant → AI underwriting. |
+| `contracts/` | Compact contract design stubs (PremiumPool, PolicyRegistry, EduCertifier, ClaimEngine). Design-only. |
+| `frontend-demoland/` | Vite + React + Tailwind demoLand frontend with all pages (login, signup, dashboard, onboarding, policies, claims, EDU, pool, AI assistant). |
 | `ROADMAP.md` | Phased plan from concept to demo. |
 
 ---
 
 ## Status
 
-Early scaffold (2026-07-06). Concept + architecture + tier model + EDU flow + DIDz credit
-score integration. No production Compact code yet — contract design validated via the
-Midnight MCP (skipZk) before any `.compact` is written. Private while the design matures.
+Scaffold + demoLand frontend (2026-07-06). Concept + architecture + tier model + EDU flow +
+DIDz credit score integration + pilot jurisdiction + partners + forensic recovery + gaming
+pilot + ecosystem coordination. demoLand frontend built (Vite + React + Tailwind, 9 pages,
+9 mock providers). Contract design stubs written for all 4 contracts (PremiumPool,
+PolicyRegistry, EduCertifier, ClaimEngine). No `.compact` files yet — design stubs will be
+validated via the Midnight MCP (skipZk) before any `.compact` is written. Private while the
+design matures.
 
 demoLand/realDeal: this repo follows the DIDzMonolith demoLand convention (amber
 `🎭 DEMO MODE` banner, 7-auth-method standard) for any web frontend.
