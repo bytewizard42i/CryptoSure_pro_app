@@ -1,0 +1,37 @@
+# Dependencies
+node_modules/
+.pnp
+.pnp.js
+
+# Build output
+dist/
+build/
+.next/
+out/
+
+# Compact build artifacts
+contracts/managed/
+*.zkir
+*.bzkir
+
+# Environment & secrets (NEVER commit)
+.env
+.env.*
+*.seed
+*.key
+*.mnemonic
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Editor / OS
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea/
+
+# Test coverage
+coverage/
