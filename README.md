@@ -144,13 +144,13 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 
 ## Status
 
-Contracts written + compile-validated (2026-07-06). All 4 Compact contracts (PremiumPool,
-PolicyRegistry, EduCertifier, ClaimEngine) written as `.compact` files and passed static
-analysis via the Midnight MCP (`midnight-compile-contract` skipZk mode). TypeScript SDK layer
+Contracts written + compiled locally with full ZK keys (2026-07-06). All 4 Compact contracts
+(PremiumPool, PolicyRegistry, EduCertifier, ClaimEngine) compiled via `compact compile`
+(compact CLI 0.5.1, compactc 0.31.x) with full ZK proving/verifying keys generated. TypeScript SDK layer
 built (contract types, client classes, multi-tx orchestration). realDeal provider
 implementations written (9 files, throw until `@midnight-ntwrk/sdk` is installed).
 demoLand frontend fully functional (Vite + React + Tailwind, 9 pages, 9 mock providers).
-Next: local `compact compile` with full ZK keys, install SDK, wire realDeal providers.
+Next: install @midnight-ntwrk/sdk, wire realDeal providers to actual SDK calls, deploy to local Midnight stack.
 
 demoLand/realDeal: this repo follows the DIDzMonolith demoLand convention (amber
 `🎭 DEMO MODE` banner, 7-auth-method standard) for any web frontend.

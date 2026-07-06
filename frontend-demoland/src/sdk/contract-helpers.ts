@@ -24,6 +24,7 @@ import {
   type PolicyRecord,
   type CertRecord,
   type ClaimRecord,
+  type RequiredModules,
   SCORE_BAND,
   POLICY_WORLD,
   TIER_CODE,
@@ -111,22 +112,26 @@ export function isEduRequired(tier: number): boolean {
   return tier >= TIER_CODE.T2;
 }
 
-/** Get required module bitfield for a tier. */
-export function getRequiredModules(tier: number): number {
-  return REQUIRED_MODULES[tier] ?? 0;
+/** Get required modules for a tier (as RequiredModules struct). */
+export function getRequiredModules(tier: number): RequiredModules {
+  return REQUIRED_MODULES[tier] ?? {
+    walletHygiene: false, seedCustody: false, phishingAwareness: false,
+    hardwareWallet: false, recoveryPlanning: false, scopeReview: false,
+    gamingAssetSafety: false,
+  };
 }
 
-/** Check if a module is in a bitfield. */
+/** Check if a module is in a bitfield (demoLand helper). */
 export function hasModule(moduleBits: number, moduleBit: number): boolean {
   return (moduleBits & moduleBit) !== 0;
 }
 
-/** Convert array of module names to bitfield. */
+/** Convert array of module names to bitfield (demoLand helper). */
 export function modulesToBits(modules: number[]): number {
   return modules.reduce((acc, m) => acc | (1 << m), 0);
 }
 
-/** Convert bitfield to array of module codes. */
+/** Convert bitfield to array of module codes (demoLand helper). */
 export function bitsToModules(bits: number): number[] {
   const result: number[] = [];
   for (let i = 0; i < 7; i++) {
@@ -318,7 +323,13 @@ export class EduCertifierClient {
   async issueCert(params: {
     holderCommitment: string;
     issuerCommitment: string;
-    moduleBits: number;
+    modWalletHygiene: boolean;
+    modSeedCustody: boolean;
+    modPhishingAwareness: boolean;
+    modHardwareWallet: boolean;
+    modRecoveryPlanning: boolean;
+    modScopeReview: boolean;
+    modGamingAssetSafety: boolean;
     scopeHash: string;
     scopeVersion: bigint;
     holderSignature: string;
@@ -351,7 +362,7 @@ export class EduCertifierClient {
     throw new Error('EduCertifierClient.revokeCert: SDK not connected');
   }
 
-  async checkModules(certId: string, requiredBits: number): Promise<boolean> {
+  async checkModules(certId: string, required: RequiredModules): Promise<boolean> {
     throw new Error('EduCertifierClient.checkModules: SDK not connected');
   }
 

@@ -224,4 +224,4 @@ Real capital, real policies, and real partnerships require:
 - Licensed insurer (VT captive formation in progress)
 - Regulatory approval (WV sandbox application planned)
 - Legal agreements (LP subscription agreements, partner MOUs)
-- Audited smart contracts (4 Compact contracts written + compile-validated via Midnight MCP; full ZK key generation + security audit pending)
+- Audited smart contracts (4 Compact contracts written + compiled locally with full ZK keys via `compact compile`; security audit pending)

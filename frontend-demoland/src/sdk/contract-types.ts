@@ -92,7 +92,10 @@ export const EDU_MODULE = {
 
 export type EduModuleCode = typeof EDU_MODULE[keyof typeof EDU_MODULE];
 
-// EDU module bitfield helpers
+// EDU module bitfield helpers (kept for demoLand mock provider compatibility)
+// NOTE: The on-chain Compact contract uses individual Boolean fields per module
+// (Compact does not support bitwise ops on Uint). The SDK translates between
+// these bitfield constants and the on-chain Boolean struct.
 export const EDU_MODULE_BITS = {
   WALLET_HYGIENE: 1 << EDU_MODULE.WALLET_HYGIENE,
   SEED_CUSTODY: 1 << EDU_MODULE.SEED_CUSTODY,
@@ -103,36 +106,38 @@ export const EDU_MODULE_BITS = {
   GAMING_ASSET_SAFETY: 1 << EDU_MODULE.GAMING_ASSET_SAFETY,
 } as const;
 
-// Required module bitfields per tier
-export const REQUIRED_MODULES: Record<number, number> = {
-  [TIER_CODE.T0]: 0,
-  [TIER_CODE.T1]: 0,
-  [TIER_CODE.T2]:
-    EDU_MODULE_BITS.WALLET_HYGIENE |
-    EDU_MODULE_BITS.SEED_CUSTODY |
-    EDU_MODULE_BITS.PHISHING_AWARENESS |
-    EDU_MODULE_BITS.SCOPE_REVIEW,
-  [TIER_CODE.T3]:
-    EDU_MODULE_BITS.WALLET_HYGIENE |
-    EDU_MODULE_BITS.SEED_CUSTODY |
-    EDU_MODULE_BITS.PHISHING_AWARENESS |
-    EDU_MODULE_BITS.HARDWARE_WALLET |
-    EDU_MODULE_BITS.RECOVERY_PLANNING |
-    EDU_MODULE_BITS.SCOPE_REVIEW,
-  [TIER_CODE.T4]:
-    EDU_MODULE_BITS.WALLET_HYGIENE |
-    EDU_MODULE_BITS.SEED_CUSTODY |
-    EDU_MODULE_BITS.PHISHING_AWARENESS |
-    EDU_MODULE_BITS.HARDWARE_WALLET |
-    EDU_MODULE_BITS.RECOVERY_PLANNING |
-    EDU_MODULE_BITS.SCOPE_REVIEW,
-  [TIER_CODE.T5]:
-    EDU_MODULE_BITS.WALLET_HYGIENE |
-    EDU_MODULE_BITS.SEED_CUSTODY |
-    EDU_MODULE_BITS.PHISHING_AWARENESS |
-    EDU_MODULE_BITS.HARDWARE_WALLET |
-    EDU_MODULE_BITS.RECOVERY_PLANNING |
-    EDU_MODULE_BITS.SCOPE_REVIEW,
+// On-chain RequiredModules struct (mirrors Compact struct)
+export interface RequiredModules {
+  walletHygiene: boolean;
+  seedCustody: boolean;
+  phishingAwareness: boolean;
+  hardwareWallet: boolean;
+  recoveryPlanning: boolean;
+  scopeReview: boolean;
+  gamingAssetSafety: boolean;
+}
+
+// Helper: convert a bitfield (used by demoLand) to RequiredModules struct
+export function bitfieldToRequiredModules(bits: number): RequiredModules {
+  return {
+    walletHygiene: (bits & EDU_MODULE_BITS.WALLET_HYGIENE) !== 0,
+    seedCustody: (bits & EDU_MODULE_BITS.SEED_CUSTODY) !== 0,
+    phishingAwareness: (bits & EDU_MODULE_BITS.PHISHING_AWARENESS) !== 0,
+    hardwareWallet: (bits & EDU_MODULE_BITS.HARDWARE_WALLET) !== 0,
+    recoveryPlanning: (bits & EDU_MODULE_BITS.RECOVERY_PLANNING) !== 0,
+    scopeReview: (bits & EDU_MODULE_BITS.SCOPE_REVIEW) !== 0,
+    gamingAssetSafety: (bits & EDU_MODULE_BITS.GAMING_ASSET_SAFETY) !== 0,
+  };
+}
+
+// Required modules per tier (as RequiredModules structs)
+export const REQUIRED_MODULES: Record<number, RequiredModules> = {
+  [TIER_CODE.T0]: { walletHygiene: false, seedCustody: false, phishingAwareness: false, hardwareWallet: false, recoveryPlanning: false, scopeReview: false, gamingAssetSafety: false },
+  [TIER_CODE.T1]: { walletHygiene: false, seedCustody: false, phishingAwareness: false, hardwareWallet: false, recoveryPlanning: false, scopeReview: false, gamingAssetSafety: false },
+  [TIER_CODE.T2]: { walletHygiene: true, seedCustody: true, phishingAwareness: true, hardwareWallet: false, recoveryPlanning: false, scopeReview: true, gamingAssetSafety: false },
+  [TIER_CODE.T3]: { walletHygiene: true, seedCustody: true, phishingAwareness: true, hardwareWallet: true, recoveryPlanning: true, scopeReview: true, gamingAssetSafety: false },
+  [TIER_CODE.T4]: { walletHygiene: true, seedCustody: true, phishingAwareness: true, hardwareWallet: true, recoveryPlanning: true, scopeReview: true, gamingAssetSafety: false },
+  [TIER_CODE.T5]: { walletHygiene: true, seedCustody: true, phishingAwareness: true, hardwareWallet: true, recoveryPlanning: true, scopeReview: true, gamingAssetSafety: false },
 };
 
 // --- Tier Gate Logic ---
@@ -206,14 +211,20 @@ export interface PolicyRecord {
 }
 
 export interface CertRecord {
-  holderCommitment: string;
-  issuerCommitment: string;
-  moduleBits: number;            // Uint<32> bitfield
-  scopeHash: string;
-  scopeVersion: bigint;
+  holderCommitment: string;      // hex Bytes<32>
+  issuerCommitment: string;      // hex Bytes<32>
+  modWalletHygiene: boolean;     // Module 0
+  modSeedCustody: boolean;       // Module 1
+  modPhishingAwareness: boolean; // Module 2
+  modHardwareWallet: boolean;    // Module 3
+  modRecoveryPlanning: boolean;  // Module 4
+  modScopeReview: boolean;       // Module 5
+  modGamingAssetSafety: boolean; // Module 6
+  scopeHash: string;             // hex Bytes<32>
+  scopeVersion: bigint;          // Uint<64>
   holderSignature: string;       // hex Bytes<64>
-  issuedAt: bigint;
-  expiresAt: bigint;             // 0 = never
+  issuedAt: bigint;              // Uint<64>
+  expiresAt: bigint;             // Uint<64> (0 = never)
   revoked: boolean;
 }
 

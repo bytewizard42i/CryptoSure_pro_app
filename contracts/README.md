@@ -1,9 +1,8 @@
-# CryptoSure — Contracts (written + compile-validated)
+# CryptoSure — Contracts (compiled locally with full ZK keys)
 
-All 4 contracts are written as `.compact` files and have passed static analysis
-via the Midnight MCP (`midnight-compile-contract` in `skipZk` mode). The `.md`
-files below are the original design stubs (kept for reference). Next step: local
-`compact compile` with full ZK key generation.
+All 4 contracts are written as `.compact` files and compiled locally via `compact compile`
+(compact CLI 0.5.1, compactc 0.31.x) with full ZK proving/verifying keys generated.
+The `.md` files below are the original design stubs (kept for reference).
 
 ## Compiled Contracts
 

@@ -1,6 +1,6 @@
 # CryptoSure — Contracts Overview
 
-> Quick reference for the 4 Compact smart contracts. All compile-validated via Midnight MCP (skipZk mode).
+> Quick reference for the 4 Compact smart contracts. All compiled locally with full ZK keys via `compact compile` (compact CLI 0.5.1, compactc 0.31.x).
 >
 > **Compiler:** compactc v0.31.x, language 0.23, pragma `>= 0.16 && <= 0.23`
 

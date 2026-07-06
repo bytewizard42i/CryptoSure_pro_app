@@ -67,13 +67,30 @@ export enum EduModule {
 struct CertRecord {
   holderCommitment: Bytes<32>;    // DIDz key commitment of the certified holder
   issuerCommitment: Bytes<32>;    // DIDz key commitment of the issuer
-  moduleBits: Uint<32>;           // Bitfield of completed modules
+  modWalletHygiene: Boolean;      // Module 0: wallet hygiene
+  modSeedCustody: Boolean;        // Module 1: seed custody
+  modPhishingAwareness: Boolean;  // Module 2: phishing awareness
+  modHardwareWallet: Boolean;     // Module 3: hardware wallet setup
+  modRecoveryPlanning: Boolean;   // Module 4: recovery planning
+  modScopeReview: Boolean;        // Module 5: scope review
+  modGamingAssetSafety: Boolean;  // Module 6: gaming asset safety
   scopeHash: Bytes<32>;           // Versioned scope text the holder signed
   scopeVersion: Uint<64>;         // Scope version
   holderSignature: Bytes<64>;     // Non-delegable holder signature on scope
   issuedAt: Uint<64>;             // Issuance timestamp
   expiresAt: Uint<64>;            // Expiry (0 = never expires)
   revoked: Boolean;               // Revocation flag
+}
+
+// Required modules for a given tier (passed by SDK caller).
+struct RequiredModules {
+  walletHygiene: Boolean;
+  seedCustody: Boolean;
+  phishingAwareness: Boolean;
+  hardwareWallet: Boolean;
+  recoveryPlanning: Boolean;
+  scopeReview: Boolean;
+  gamingAssetSafety: Boolean;
 }
 
 struct CertHashInput {
@@ -155,10 +172,32 @@ circuit check_caller_is_issuer(issuer_commitment: Bytes<32>): [] {
   );
 }
 
-// Check if a module bit is set in the module bitfield.
-export circuit has_module(module_bits: Uint<32>, module: Uint<8>): Boolean {
-  const bit = (1 as Uint<32>) << disclose(module);
-  return (disclose(module_bits) & bit) != 0;
+// Check if a specific module is completed (by module index 0-6).
+export circuit has_module(
+  cert_id: Bytes<32>,
+  module_idx: Uint<8>
+): Boolean {
+  const publicCertId = disclose(cert_id);
+  assert(certs.member(publicCertId), "Cert not found");
+  const record = certs.lookup(publicCertId);
+
+  const idx = disclose(module_idx);
+  const is0 = idx == 0;
+  const is1 = idx == 1;
+  const is2 = idx == 2;
+  const is3 = idx == 3;
+  const is4 = idx == 4;
+  const is5 = idx == 5;
+  const is6 = idx == 6;
+
+  return is0 ? disclose(record.modWalletHygiene) :
+         is1 ? disclose(record.modSeedCustody) :
+         is2 ? disclose(record.modPhishingAwareness) :
+         is3 ? disclose(record.modHardwareWallet) :
+         is4 ? disclose(record.modRecoveryPlanning) :
+         is5 ? disclose(record.modScopeReview) :
+         is6 ? disclose(record.modGamingAssetSafety) :
+         false;
 }
 
 // ============================================================================
@@ -206,7 +245,13 @@ export circuit issue_cert(
   cert_id: Bytes<32>,
   holder_commitment: Bytes<32>,
   issuer_commitment: Bytes<32>,
-  module_bits: Uint<32>,
+  mod_wallet_hygiene: Boolean,
+  mod_seed_custody: Boolean,
+  mod_phishing_awareness: Boolean,
+  mod_hardware_wallet: Boolean,
+  mod_recovery_planning: Boolean,
+  mod_scope_review: Boolean,
+  mod_gaming_asset_safety: Boolean,
   scope_hash: Bytes<32>,
   scope_version: Uint<64>,
   holder_signature: Bytes<64>,
@@ -230,7 +275,13 @@ export circuit issue_cert(
   const record = CertRecord {
     holderCommitment: holder_commitment,
     issuerCommitment: issuer_commitment,
-    moduleBits: module_bits,
+    modWalletHygiene: mod_wallet_hygiene,
+    modSeedCustody: mod_seed_custody,
+    modPhishingAwareness: mod_phishing_awareness,
+    modHardwareWallet: mod_hardware_wallet,
+    modRecoveryPlanning: mod_recovery_planning,
+    modScopeReview: mod_scope_review,
+    modGamingAssetSafety: mod_gaming_asset_safety,
     scopeHash: scope_hash,
     scopeVersion: scope_version,
     holderSignature: holder_signature,
@@ -343,7 +394,13 @@ export circuit revoke_cert(
   const updated = CertRecord {
     holderCommitment: record.holderCommitment,
     issuerCommitment: record.issuerCommitment,
-    moduleBits: record.moduleBits,
+    modWalletHygiene: record.modWalletHygiene,
+    modSeedCustody: record.modSeedCustody,
+    modPhishingAwareness: record.modPhishingAwareness,
+    modHardwareWallet: record.modHardwareWallet,
+    modRecoveryPlanning: record.modRecoveryPlanning,
+    modScopeReview: record.modScopeReview,
+    modGamingAssetSafety: record.modGamingAssetSafety,
     scopeHash: record.scopeHash,
     scopeVersion: record.scopeVersion,
     holderSignature: record.holderSignature,
@@ -361,10 +418,10 @@ export circuit revoke_cert(
 // ============================================================================
 
 // Called by: PolicyRegistry (via SDK) to verify required modules for a tier.
-// The holder proves control and the required module bitfield is checked.
+// The holder proves control and each required module is checked individually.
 export circuit check_modules(
   cert_id: Bytes<32>,
-  required_bits: Uint<32>
+  required: RequiredModules
 ): Boolean {
   const publicCertId = disclose(cert_id);
   assert(certs.member(publicCertId), "Cert not found");
@@ -373,10 +430,28 @@ export circuit check_modules(
 
   check_caller_is_holder(disclose(record.holderCommitment));
 
-  // Check that all required module bits are set.
-  const certBits = disclose(record.moduleBits);
-  const reqBits = disclose(required_bits);
-  assert((certBits & reqBits) == reqBits, "Required modules not completed");
+  // Check each required module individually (no bitwise ops in Compact).
+  if (disclose(required.walletHygiene)) {
+    assert(disclose(record.modWalletHygiene), "Wallet hygiene module not completed");
+  }
+  if (disclose(required.seedCustody)) {
+    assert(disclose(record.modSeedCustody), "Seed custody module not completed");
+  }
+  if (disclose(required.phishingAwareness)) {
+    assert(disclose(record.modPhishingAwareness), "Phishing awareness module not completed");
+  }
+  if (disclose(required.hardwareWallet)) {
+    assert(disclose(record.modHardwareWallet), "Hardware wallet module not completed");
+  }
+  if (disclose(required.recoveryPlanning)) {
+    assert(disclose(record.modRecoveryPlanning), "Recovery planning module not completed");
+  }
+  if (disclose(required.scopeReview)) {
+    assert(disclose(record.modScopeReview), "Scope review module not completed");
+  }
+  if (disclose(required.gamingAssetSafety)) {
+    assert(disclose(record.modGamingAssetSafety), "Gaming asset safety module not completed");
+  }
 
   return true;
 }

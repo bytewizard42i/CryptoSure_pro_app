@@ -35,7 +35,7 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 - [x] Tier enforcement design — cap ladder, EDU-required gate for tiers ≥ $5k, score-scaled agent ceiling
 - [x] Validate all contracts via Midnight MCP (`midnight-compile-contract` skipZk) — all 4 passed static analysis
 - [x] Write `.compact` files — all 4 in `contracts/` directory
-- [ ] Local `compact compile` with full ZK key generation
+- [x] Local `compact compile` with full ZK key generation — all 4 compiled (compact CLI 0.5.1, compactc 0.31.x)
 
 ## Phase 2 — CryptoSure-EDU (DONE: written + compile-validated)
 
