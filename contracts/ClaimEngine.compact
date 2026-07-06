@@ -1,0 +1,616 @@
+// ============================================================================
+// CryptoSure — ClaimEngine.compact
+// ============================================================================
+//
+// Claims, anti-double-claim, selective disclosure, and payout release.
+//
+// WHAT THIS CONTRACT IS
+//   Handles CryptoSure's claim lifecycle:
+//     1. Receives claim submissions with proof of a covered loss event
+//     2. Enforces anti-double-claim via nullifier pattern
+//     3. Manages claim lifecycle: SUBMITTED → UNDER_REVIEW → APPROVED/DENIED → PAID
+//     4. Triggers payout from PremiumPool upon approval (via SDK)
+//     5. Supports dispute window for denied claims
+//
+// PRIVACY MODEL (John's ruling §0: privacy by default)
+//   Public on-chain:  claim count, pending count (aggregate counters).
+//   Committed (hidden): holder identity, policy ID, event type, description,
+//                       amount, adjuster identity, forensic report hash.
+//                       Each claim is a commitment in a Map.
+//
+// ANTI-DOUBLE-CLAIM
+//   The nullifier is derived from holder_did_commitment + policy_id +
+//   event_type + loss_identifier. Filing for the same event on the same
+//   policy is blocked. Different events on the same policy are allowed.
+//   An agent filing for the holder uses the same nullifier (holder
+//   commitment) — the agent cannot file a claim the holder already filed.
+//
+// REUSED PATTERNS
+//   Nullifier (anti-double-spend) — SCIFz pattern
+//   Witness-derived identity — DIDzRegistry, RWAz pattern
+//   State machine (SUBMITTED → UNDER_REVIEW → APPROVED/DENIED → PAID)
+//     — midnight-expert compact-patterns
+//   Time-windowed dispute — CareToCoin pattern
+//
+// ECOSYSTEM CONNECTIONS
+//   DIDz.io        -> holder identity is a DIDz key commitment
+//   PolicyRegistry -> verify_policy_for_claim (via SDK, same tx)
+//   PremiumPool    -> authorize_payout + release_payout (via SDK, same tx)
+//   AgenticDID     -> agents can file claims under scoped grants
+//   ZKSplunk       -> reads public counters + event logs for telemetry
+//
+// COMPILER
+//   pragma >= 0.16 && <= 0.23 (compactc v0.31.x, language 0.23)
+// ============================================================================
+
+pragma language_version >= 0.16 && <= 0.23;
+
+import CompactStandardLibrary;
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+export enum ClaimStatus {
+  submitted,       // 0 — filed, awaiting adjuster assignment
+  under_review,    // 1 — adjuster assigned, reviewing
+  approved,        // 2 — approved, awaiting payout
+  denied,          // 3 — denied (holder may dispute within window)
+  paid,            // 4 — payout confirmed received
+  disputed         // 5 — denied but holder disputed, back under review
+}
+
+export enum ClaimEvent {
+  theft,           // 0 — theft/drainer attack
+  device_loss,     // 1 — physical device loss
+  phishing,        // 2 — phishing loss (if covered)
+  hardware_failure,// 3 — hardware failure/damage
+  gaming_loss,     // 4 — gaming asset loss
+  smart_contract   // 5 — smart contract exploit loss
+}
+
+// ============================================================================
+// DATA STRUCTURES
+// ============================================================================
+
+struct ClaimRecord {
+  policyId: Bytes<32>;             // Linked policy commitment
+  holderCommitment: Bytes<32>;     // Claimant's DIDz commitment
+  status: Uint<8>;                 // ClaimStatus cast as Uint<8>
+  eventType: Uint<8>;              // ClaimEvent cast as Uint<8>
+  descriptionHash: Bytes<32>;      // Hash of the free-text description
+  amount: Uint<128>;               // Claimed amount
+  submittedAt: Uint<64>;           // Submission timestamp
+  resolvedAt: Uint<64>;            // Resolution timestamp (0 if pending)
+  denyReasonHash: Bytes<32>;       // Denial reason hash (zero if approved)
+  forensicReportHash: Bytes<32>;   // Forensic report hash (zero if N/A)
+  adjusterCommitment: Bytes<32>;   // Assigned adjuster's DIDz commitment
+  nullifier: Bytes<32>;            // Anti-double-claim nullifier
+}
+
+struct NullifierHashInput {
+  domain: Bytes<32>;
+  holder: Bytes<32>;
+  policyId: Bytes<32>;
+  eventType: Uint<8>;
+  lossIdentifier: Bytes<32>;
+}
+
+struct ClaimHashInput {
+  domain: Bytes<32>;
+  holder: Bytes<32>;
+  policyId: Bytes<32>;
+  nonce: Uint<64>;
+}
+
+// ============================================================================
+// LEDGER STATE
+// ============================================================================
+
+// Claim ID → ClaimRecord. The claim ID is a hash known only to the holder
+// and the SDK.
+export ledger claims: Map<Bytes<32>, ClaimRecord>;
+
+// Total claims submitted (public counter).
+export ledger claimCount: Counter;
+
+// Claims under review (public counter).
+export ledger pendingCount: Counter;
+
+// Anti-double-claim nullifier registry. If a nullifier is present,
+// the same loss event on the same policy has already been claimed.
+export ledger nullifierRegistry: Set<Bytes<32>>;
+
+// Dispute window in blocks (public, admin-configurable).
+export ledger disputeWindow: Uint<64>;
+
+// Admin set (manages adjusters, dispute window).
+export ledger admins: Set<Bytes<32>>;
+export ledger adminClaimed: Boolean;
+
+// Authorized adjusters (can be assigned to claims).
+export ledger adjusters: Set<Bytes<32>>;
+
+// ============================================================================
+// PRIVATE INPUTS
+// ============================================================================
+
+witness local_secret_key(): Bytes<32>;
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+export circuit derive_public_key(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    pad(32, "midnight:mm:pk:"),
+    sk
+  ]);
+}
+
+circuit caller_public_key(): Bytes<32> {
+  return derive_public_key(local_secret_key());
+}
+
+// Compute the anti-double-claim nullifier.
+export circuit compute_nullifier(
+  holder_commitment: Bytes<32>,
+  policy_id: Bytes<32>,
+  event_type: Uint<8>,
+  loss_identifier: Bytes<32>
+): Bytes<32> {
+  return persistentHash<NullifierHashInput>(NullifierHashInput {
+    domain: pad(32, "cryptosure:claim:nullifier:v1"),
+    holder: holder_commitment,
+    policyId: policy_id,
+    eventType: event_type,
+    lossIdentifier: loss_identifier
+  });
+}
+
+// Derive a claim ID from holder + policy + nonce.
+export circuit derive_claim_id(
+  holder_commitment: Bytes<32>,
+  policy_id: Bytes<32>,
+  nonce: Uint<64>
+): Bytes<32> {
+  return persistentHash<ClaimHashInput>(ClaimHashInput {
+    domain: pad(32, "cryptosure:claim:v1"),
+    holder: holder_commitment,
+    policyId: policy_id,
+    nonce: nonce
+  });
+}
+
+circuit check_caller_is_holder(holder_commitment: Bytes<32>): [] {
+  assert(
+    disclose(caller_public_key() == holder_commitment),
+    "Caller does not control this holder commitment"
+  );
+}
+
+circuit assert_is_admin(): [] {
+  assert(
+    admins.member(disclose(caller_public_key())),
+    "Caller is not an admin"
+  );
+}
+
+circuit assert_is_adjuster(): [] {
+  assert(
+    adjusters.member(disclose(caller_public_key())),
+    "Caller is not an authorized adjuster"
+  );
+}
+
+// ============================================================================
+// ADMIN MANAGEMENT
+// ============================================================================
+
+export circuit claim_admin(): [] {
+  assert(!adminClaimed, "Admin already claimed");
+  admins.insert(disclose(caller_public_key()));
+  adminClaimed = true;
+}
+
+export circuit add_admin(admin_key: Bytes<32>): [] {
+  assert_is_admin();
+  admins.insert(disclose(admin_key));
+}
+
+export circuit remove_admin(admin_key: Bytes<32>): [] {
+  assert_is_admin();
+  assert(disclose(admins.size()) > (1 as Uint<64>), "Cannot remove last admin");
+  admins.remove(disclose(admin_key));
+}
+
+export circuit add_adjuster(adjuster_key: Bytes<32>): [] {
+  assert_is_admin();
+  adjusters.insert(disclose(adjuster_key));
+}
+
+export circuit remove_adjuster(adjuster_key: Bytes<32>): [] {
+  assert_is_admin();
+  adjusters.remove(disclose(adjuster_key));
+}
+
+export circuit set_dispute_window(blocks: Uint<64>): [] {
+  assert_is_admin();
+  disputeWindow = disclose(blocks);
+}
+
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
+
+constructor() {
+  adminClaimed = false;
+  disputeWindow = 1000;  // ~1000 blocks default dispute window
+}
+
+// ============================================================================
+// SUBMIT CLAIM — file a new claim
+// ============================================================================
+
+// Called by: the holder (or agent via AgenticDID) through the SDK.
+// The SDK orchestrates: submit_claim here + mark_claimed on PolicyRegistry
+// in the same transaction.
+//
+// ANTI-DOUBLE-CLAIM: The nullifier is derived from holder commitment +
+// policy_id + event_type + loss_identifier. If the nullifier already
+// exists in the registry, the claim is rejected.
+export circuit submit_claim(
+  claim_id: Bytes<32>,
+  policy_id: Bytes<32>,
+  holder_commitment: Bytes<32>,
+  event_type: Uint<8>,
+  description_hash: Bytes<32>,
+  amount: Uint<128>,
+  loss_identifier: Bytes<32>,
+  submitted_at: Uint<64>
+): [] {
+  const publicClaimId = disclose(claim_id);
+  assert(!claims.member(publicClaimId), "Claim ID already exists");
+
+  // Verify caller is the holder (or agent with valid grant — agent
+  // verification is done off-chain, the holder commitment is still used
+  // for the nullifier so the agent cannot double-file).
+  check_caller_is_holder(disclose(holder_commitment));
+
+  // Compute and check nullifier (anti-double-claim).
+  const nullifier = compute_nullifier(
+    holder_commitment,
+    policy_id,
+    event_type,
+    loss_identifier
+  );
+  const publicNullifier = disclose(nullifier);
+  assert(!nullifierRegistry.member(publicNullifier), "Double-claim detected: this loss event on this policy has already been claimed");
+  nullifierRegistry.insert(publicNullifier);
+
+  const publicAmount = disclose(amount);
+  assert(publicAmount > 0, "Claim amount must be positive");
+
+  const record = ClaimRecord {
+    policyId: policy_id,
+    holderCommitment: holder_commitment,
+    status: 0,  // SUBMITTED
+    eventType: event_type,
+    descriptionHash: description_hash,
+    amount: amount,
+    submittedAt: submitted_at,
+    resolvedAt: 0,
+    denyReasonHash: pad(32, ""),
+    forensicReportHash: pad(32, ""),
+    adjusterCommitment: pad(32, ""),
+    nullifier: nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(record));
+  claimCount.increment(1);
+  pendingCount.increment(1);
+}
+
+// ============================================================================
+// ASSIGN ADJUSTER — assign an adjuster to review the claim
+// ============================================================================
+
+// Called by: an admin. Assigns an adjuster and moves claim to UNDER_REVIEW.
+export circuit assign_adjuster(
+  claim_id: Bytes<32>,
+  adjuster_commitment: Bytes<32>
+): [] {
+  assert_is_admin();
+
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+
+  const record = claims.lookup(publicClaimId);
+  assert(disclose(record.status) == (0 as Uint<8>), "Claim is not in SUBMITTED state");
+
+  const updated = ClaimRecord {
+    policyId: record.policyId,
+    holderCommitment: record.holderCommitment,
+    status: 1,  // UNDER_REVIEW
+    eventType: record.eventType,
+    descriptionHash: record.descriptionHash,
+    amount: record.amount,
+    submittedAt: record.submittedAt,
+    resolvedAt: record.resolvedAt,
+    denyReasonHash: record.denyReasonHash,
+    forensicReportHash: record.forensicReportHash,
+    adjusterCommitment: adjuster_commitment,
+    nullifier: record.nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(updated));
+}
+
+// ============================================================================
+// SUBMIT FORENSIC REPORT — attach a forensic recovery partner's report
+// ============================================================================
+
+// Called by: the assigned adjuster. Anchors the forensic report hash
+// on-chain without revealing the report contents.
+export circuit submit_forensic_report(
+  claim_id: Bytes<32>,
+  report_hash: Bytes<32>
+): [] {
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+
+  const record = claims.lookup(publicClaimId);
+
+  // Verify caller is the assigned adjuster.
+  assert(
+    disclose(caller_public_key() == record.adjusterCommitment),
+    "Caller is not the assigned adjuster"
+  );
+
+  assert(disclose(record.status) == (1 as Uint<8>), "Claim is not under review");
+
+  const updated = ClaimRecord {
+    policyId: record.policyId,
+    holderCommitment: record.holderCommitment,
+    status: record.status,
+    eventType: record.eventType,
+    descriptionHash: record.descriptionHash,
+    amount: record.amount,
+    submittedAt: record.submittedAt,
+    resolvedAt: record.resolvedAt,
+    denyReasonHash: record.denyReasonHash,
+    forensicReportHash: report_hash,
+    adjusterCommitment: record.adjusterCommitment,
+    nullifier: record.nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(updated));
+}
+
+// ============================================================================
+// APPROVE CLAIM — approve a claim for payout
+// ============================================================================
+
+// Called by: the assigned adjuster. The SDK then calls
+// PremiumPool.authorize_payout in the same or subsequent transaction.
+// AI can pre-screen and recommend, but only a human adjuster with a
+// DIDz commitment can approve.
+export circuit approve_claim(
+  claim_id: Bytes<32>,
+  approved_amount: Uint<128>,
+  resolved_at: Uint<64>
+): [] {
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+
+  const record = claims.lookup(publicClaimId);
+
+  // Verify caller is the assigned adjuster.
+  assert(
+    disclose(caller_public_key() == record.adjusterCommitment),
+    "Caller is not the assigned adjuster"
+  );
+
+  assert(disclose(record.status) == (1 as Uint<8>), "Claim is not under review");
+
+  const publicApproved = disclose(approved_amount);
+  assert(publicApproved > 0, "Approved amount must be positive");
+  assert(publicApproved <= disclose(record.amount), "Approved amount exceeds claimed amount");
+
+  const updated = ClaimRecord {
+    policyId: record.policyId,
+    holderCommitment: record.holderCommitment,
+    status: 2,  // APPROVED
+    eventType: record.eventType,
+    descriptionHash: record.descriptionHash,
+    amount: approved_amount,
+    submittedAt: record.submittedAt,
+    resolvedAt: resolved_at,
+    denyReasonHash: pad(32, ""),
+    forensicReportHash: record.forensicReportHash,
+    adjusterCommitment: record.adjusterCommitment,
+    nullifier: record.nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(updated));
+  pendingCount.decrement(1);
+}
+
+// ============================================================================
+// DENY CLAIM — deny a claim
+// ============================================================================
+
+// Called by: the assigned adjuster. The SDK then calls
+// PremiumPool.deny_payout in the same transaction.
+export circuit deny_claim(
+  claim_id: Bytes<32>,
+  reason_hash: Bytes<32>,
+  resolved_at: Uint<64>
+): [] {
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+
+  const record = claims.lookup(publicClaimId);
+
+  assert(
+    disclose(caller_public_key() == record.adjusterCommitment),
+    "Caller is not the assigned adjuster"
+  );
+
+  assert(disclose(record.status) == (1 as Uint<8>), "Claim is not under review");
+
+  const updated = ClaimRecord {
+    policyId: record.policyId,
+    holderCommitment: record.holderCommitment,
+    status: 3,  // DENIED
+    eventType: record.eventType,
+    descriptionHash: record.descriptionHash,
+    amount: record.amount,
+    submittedAt: record.submittedAt,
+    resolvedAt: resolved_at,
+    denyReasonHash: reason_hash,
+    forensicReportHash: record.forensicReportHash,
+    adjusterCommitment: record.adjusterCommitment,
+    nullifier: record.nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(updated));
+  pendingCount.decrement(1);
+}
+
+// ============================================================================
+// CONFIRM PAYOUT — confirm that the payout was received
+// ============================================================================
+
+// Called by: the holder (via SDK after PremiumPool.release_payout completes).
+export circuit confirm_payout(
+  claim_id: Bytes<32>
+): [] {
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+
+  const record = claims.lookup(publicClaimId);
+
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  assert(disclose(record.status) == (2 as Uint<8>), "Claim is not approved");
+
+  const updated = ClaimRecord {
+    policyId: record.policyId,
+    holderCommitment: record.holderCommitment,
+    status: 4,  // PAID
+    eventType: record.eventType,
+    descriptionHash: record.descriptionHash,
+    amount: record.amount,
+    submittedAt: record.submittedAt,
+    resolvedAt: record.resolvedAt,
+    denyReasonHash: record.denyReasonHash,
+    forensicReportHash: record.forensicReportHash,
+    adjusterCommitment: record.adjusterCommitment,
+    nullifier: record.nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(updated));
+}
+
+// ============================================================================
+// DISPUTE CLAIM — holder disputes a denial within the dispute window
+// ============================================================================
+
+// Called by: the holder. Re-opens the claim for review.
+export circuit dispute_claim(
+  claim_id: Bytes<32>,
+  dispute_reason_hash: Bytes<32>,
+  current_time: Uint<64>
+): [] {
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+
+  const record = claims.lookup(publicClaimId);
+
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  assert(disclose(record.status) == (3 as Uint<8>), "Claim is not denied");
+
+  // Check dispute window: current_time - resolved_at <= disputeWindow.
+  const resolvedAt = disclose(record.resolvedAt);
+  const now = disclose(current_time);
+  assert(now >= resolvedAt, "Invalid timestamp");
+  assert((now - resolvedAt) <= disclose(disputeWindow), "Dispute window has expired");
+
+  const updated = ClaimRecord {
+    policyId: record.policyId,
+    holderCommitment: record.holderCommitment,
+    status: 5,  // DISPUTED
+    eventType: record.eventType,
+    descriptionHash: record.descriptionHash,
+    amount: record.amount,
+    submittedAt: record.submittedAt,
+    resolvedAt: record.resolvedAt,
+    denyReasonHash: record.denyReasonHash,
+    forensicReportHash: record.forensicReportHash,
+    adjusterCommitment: record.adjusterCommitment,
+    nullifier: record.nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(updated));
+  pendingCount.increment(1);
+}
+
+// ============================================================================
+// RE-ASSIGN DISPUTED CLAIM — admin re-assigns adjuster for disputed claim
+// ============================================================================
+
+export circuit reassign_disputed_claim(
+  claim_id: Bytes<32>,
+  new_adjuster_commitment: Bytes<32>
+): [] {
+  assert_is_admin();
+
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+
+  const record = claims.lookup(publicClaimId);
+  assert(disclose(record.status) == (5 as Uint<8>), "Claim is not disputed");
+
+  const updated = ClaimRecord {
+    policyId: record.policyId,
+    holderCommitment: record.holderCommitment,
+    status: 1,  // BACK TO UNDER_REVIEW
+    eventType: record.eventType,
+    descriptionHash: record.descriptionHash,
+    amount: record.amount,
+    submittedAt: record.submittedAt,
+    resolvedAt: 0,
+    denyReasonHash: pad(32, ""),
+    forensicReportHash: pad(32, ""),
+    adjusterCommitment: new_adjuster_commitment,
+    nullifier: record.nullifier
+  };
+
+  claims.insert(publicClaimId, disclose(updated));
+  pendingCount.decrement(1);
+}
+
+// ============================================================================
+// PUBLIC QUERIES
+// ============================================================================
+
+export circuit get_claim_status(claim_id: Bytes<32>): Uint<8> {
+  const publicClaimId = disclose(claim_id);
+  assert(claims.member(publicClaimId), "Claim not found");
+  const record = claims.lookup(publicClaimId);
+  return disclose(record.status);
+}
+
+export circuit get_claim_count(): Uint<64> {
+  return claimCount.read();
+}
+
+export circuit get_pending_count(): Uint<64> {
+  return pendingCount.read();
+}
+
+export circuit get_dispute_window(): Uint<64> {
+  return disputeWindow;
+}

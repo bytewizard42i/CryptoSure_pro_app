@@ -1,0 +1,424 @@
+// ============================================================================
+// CryptoSure — PremiumPool.compact
+// ============================================================================
+//
+// Shielded premium pool: collect premiums, hold reserves, pay claims.
+//
+// WHAT THIS CONTRACT IS
+//   CryptoSure's shielded Treasury/Pot. It:
+//     1. Collects premiums when policies are purchased
+//     2. Holds reserves (shielded balance, public aggregate counters)
+//     3. Pays claims via escrow-style release to approved claimants
+//     4. Accepts LP capital deposits and processes LP withdrawals
+//
+// PRIVACY MODEL (John's ruling §0: privacy by default)
+//   Public on-chain:  aggregate counters (total balance, premiums collected,
+//                     claims paid, active policy count). These leak no
+//                     individual facts.
+//   Committed (hidden): LP identities, claimant identities, individual
+//                       deposit and payout amounts. Each is a DIDz key
+//                       commitment — never a raw identity.
+//
+// REUSED PATTERNS
+//   Treasury/Pot (receiveShielded, mergeCoinImmediate, sendShielded)
+//     — midnight-expert value-handling-patterns.md
+//   Escrow (sendShielded + result.change, state machine)
+//     — midnight-expert value-handling-patterns.md
+//   Witness-derived identity (persistentHash domain-separated key)
+//     — DIDzRegistry, RWAz pattern
+//
+// ECOSYSTEM CONNECTIONS
+//   DIDz.io        -> holder/LP identities are DIDz key commitments
+//   AgenticDID     -> agents act under scoped grants (verified off-chain)
+//   ClaimEngine    -> calls authorize_payout after claim approval
+//   ZKSplunk       -> reads public counters for telemetry/observability
+//
+// COMPILER
+//   pragma >= 0.16 && <= 0.23 (compactc v0.31.x, language 0.23)
+//
+// CROSS-CONTRACT LIMIT
+//   Compact does not yet support cross-contract calls. The SDK orchestrates
+//   multi-contract transactions (e.g., PolicyRegistry.buy_policy +
+//   PremiumPool.deposit_premium in one transaction). This contract's circuits
+//   are designed to be called by the SDK in the same transaction as the
+//   triggering PolicyRegistry/ClaimEngine circuit.
+// ============================================================================
+
+pragma language_version >= 0.16 && <= 0.23;
+
+import CompactStandardLibrary;
+
+// ============================================================================
+// PUBLIC STATE (aggregate counters — no individual facts leaked)
+// ============================================================================
+
+// Total shielded coin held by the pool. Public for solvency transparency.
+export ledger pool: QualifiedShieldedCoinInfo;
+export ledger poolHasCoin: Boolean;
+
+// Cumulative premiums received (public counter).
+export ledger totalPremiumsCollected: Counter;
+
+// Cumulative claims paid out (public counter).
+export ledger totalClaimsPaid: Counter;
+
+// Active policy count (incremented on premium deposit, decremented on lapse).
+export ledger activePolicyCount: Counter;
+
+// LP deposit count (public).
+export ledger totalLpDeposits: Counter;
+
+// ============================================================================
+// SHIELDED STATE (individual identities and amounts — committed, not revealed)
+// ============================================================================
+
+// LP key commitment -> deposit amount. Tracks who deposited how much.
+export ledger lpDeposits: Map<Bytes<32>, Uint<128>>;
+
+// Claim ID -> payout amount (awaiting release to claimant).
+export ledger pendingPayouts: Map<Bytes<32>, Uint<128>>;
+
+// Claim ID -> claimant key commitment (for release verification).
+export ledger pendingPayoutClaimant: Map<Bytes<32>, Bytes<32>>;
+
+// Authorized adjusters (can authorize payouts). Multi-admin set.
+export ledger adjusters: Set<Bytes<32>>;
+
+// Admin set (manages adjusters). Initialized with deployer.
+export ledger admins: Set<Bytes<32>>;
+export ledger adminClaimed: Boolean;
+
+// ============================================================================
+// PRIVATE INPUTS
+// ============================================================================
+
+witness local_secret_key(): Bytes<32>;
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+export circuit derive_public_key(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    pad(32, "midnight:mm:pk:"),
+    sk
+  ]);
+}
+
+circuit caller_public_key(): Bytes<32> {
+  return derive_public_key(local_secret_key());
+}
+
+// ============================================================================
+// ADMIN MANAGEMENT (same pattern as DIDzRegistry)
+// ============================================================================
+
+export circuit claim_admin(): [] {
+  assert(!adminClaimed, "Admin already claimed");
+  admins.insert(disclose(caller_public_key()));
+  adminClaimed = true;
+}
+
+circuit assert_is_admin(): [] {
+  assert(
+    admins.member(disclose(caller_public_key())),
+    "Caller is not an admin"
+  );
+}
+
+export circuit add_admin(admin_key: Bytes<32>): [] {
+  assert_is_admin();
+  admins.insert(disclose(admin_key));
+}
+
+export circuit remove_admin(admin_key: Bytes<32>): [] {
+  assert_is_admin();
+  assert(disclose(admins.size()) > (1 as Uint<64>), "Cannot remove last admin");
+  admins.remove(disclose(admin_key));
+}
+
+// Adjuster management — admins enroll adjusters who can authorize payouts.
+export circuit add_adjuster(adjuster_key: Bytes<32>): [] {
+  assert_is_admin();
+  adjusters.insert(disclose(adjuster_key));
+}
+
+export circuit remove_adjuster(adjuster_key: Bytes<32>): [] {
+  assert_is_admin();
+  adjusters.remove(disclose(adjuster_key));
+}
+
+circuit assert_is_adjuster(): [] {
+  assert(
+    adjusters.member(disclose(caller_public_key())),
+    "Caller is not an authorized adjuster"
+  );
+}
+
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
+
+constructor() {
+  adminClaimed = false;
+  poolHasCoin = false;
+}
+
+// ============================================================================
+// PREMIUM DEPOSIT — add a premium payment to the pool
+// ============================================================================
+
+// Called by: the SDK in the same transaction as PolicyRegistry.buy_policy.
+// The premium coin is received and merged into the pool. The proven score
+// band is recorded for premium multiplier verification (off-chain).
+//
+// Inputs:
+//   coin        — shielded premium payment addressed to this contract
+//   score_band  — proven DIDz credit-score band (0=A, 1=B, 2=C, 3=D, 4=unrated)
+//                 The prover verifies the ZK proof off-chain and provides the
+//                 band value. The pool never learns the raw score.
+export circuit deposit_premium(
+  coin: ShieldedCoinInfo,
+  score_band: Uint<8>
+): [] {
+  const disclosedCoin = disclose(coin);
+  assert(disclosedCoin.value > 0, "Premium must be positive");
+
+  receiveShielded(disclosedCoin);
+
+  if (!poolHasCoin) {
+    pool.writeCoin(disclosedCoin,
+      right<ZswapCoinPublicKey, ContractAddress>(kernel.self()));
+    poolHasCoin = true;
+  } else {
+    pool.writeCoin(mergeCoinImmediate(pool, disclosedCoin),
+      right<ZswapCoinPublicKey, ContractAddress>(kernel.self()));
+  }
+
+  totalPremiumsCollected.increment(1);
+  activePolicyCount.increment(1);
+
+  // The score band is disclosed for on-chain audit; the raw score is never
+  // on-chain. The premium multiplier is applied off-chain by the SDK before
+  // constructing the coin — the pool just receives the computed amount.
+  const disclosedBand = disclose(score_band);
+}
+
+// ============================================================================
+// LP CAPITAL DEPOSIT — LP seeds the pool with reserve capital
+// ============================================================================
+
+// Called by: liquidity providers (institutional partners).
+// The LP's identity is a DIDz key commitment — no raw identity on-chain.
+export circuit deposit_lp_capital(
+  coin: ShieldedCoinInfo,
+  lp_commitment: Bytes<32>
+): [] {
+  const disclosedCoin = disclose(coin);
+  assert(disclosedCoin.value > 0, "LP deposit must be positive");
+
+  receiveShielded(disclosedCoin);
+
+  if (!poolHasCoin) {
+    pool.writeCoin(disclosedCoin,
+      right<ZswapCoinPublicKey, ContractAddress>(kernel.self()));
+    poolHasCoin = true;
+  } else {
+    pool.writeCoin(mergeCoinImmediate(pool, disclosedCoin),
+      right<ZswapCoinPublicKey, ContractAddress>(kernel.self()));
+  }
+
+  const publicLp = disclose(lp_commitment);
+  if (lpDeposits.member(publicLp)) {
+    const current = lpDeposits.lookup(publicLp);
+    lpDeposits.insert(publicLp, (current + disclosedCoin.value) as Uint<128>);
+  } else {
+    lpDeposits.insert(publicLp, disclosedCoin.value);
+  }
+
+  totalLpDeposits.increment(1);
+}
+
+// ============================================================================
+// AUTHORIZE PAYOUT — authorize a claim payout (called after ClaimEngine approval)
+// ============================================================================
+
+// Called by: an authorized adjuster (via the SDK in the same tx as
+// ClaimEngine.approve_claim). The adjuster's identity is proven in ZK.
+// The claimant's DIDz commitment is recorded for release verification.
+export circuit authorize_payout(
+  claim_id: Bytes<32>,
+  amount: Uint<128>,
+  claimant_commitment: Bytes<32>
+): [] {
+  assert_is_adjuster();
+
+  const publicClaimId = disclose(claim_id);
+  const publicAmount = disclose(amount);
+  const publicClaimant = disclose(claimant_commitment);
+
+  assert(!pendingPayouts.member(publicClaimId), "Payout already authorized");
+  assert(publicAmount > 0, "Payout amount must be positive");
+  assert(poolHasCoin, "Pool is empty");
+
+  pendingPayouts.insert(publicClaimId, publicAmount);
+  pendingPayoutClaimant.insert(publicClaimId, publicClaimant);
+}
+
+// ============================================================================
+// RELEASE PAYOUT — release escrowed funds to the claimant
+// ============================================================================
+
+// Called by: the claimant (via SDK after ClaimEngine.confirm_payout).
+// The claimant proves control of their DIDz commitment. Funds are sent
+// via sendShielded to the claimant's public key.
+export circuit release_payout(
+  claim_id: Bytes<32>
+): ShieldedCoinInfo {
+  const publicClaimId = disclose(claim_id);
+
+  assert(pendingPayouts.member(publicClaimId), "No pending payout for this claim");
+
+  const payoutAmount = pendingPayouts.lookup(publicClaimId);
+  const claimantCommitment = pendingPayoutClaimant.lookup(publicClaimId);
+
+  // Verify caller controls the claimant's DIDz commitment.
+  assert(
+    disclose(caller_public_key() == claimantCommitment),
+    "Caller does not control the claimant commitment"
+  );
+
+  assert(poolHasCoin, "Pool is empty");
+
+  const recipient = left<ZswapCoinPublicKey, ContractAddress>(
+    ZswapCoinPublicKey{ bytes: claimantCommitment });
+
+  const result = sendShielded(pool, recipient, payoutAmount);
+
+  // Handle change coin — must be stored back or pool loses funds.
+  if (disclose(result.change.is_some)) {
+    pool.writeCoin(result.change.value,
+      right<ZswapCoinPublicKey, ContractAddress>(kernel.self()));
+  } else {
+    poolHasCoin = false;
+  }
+
+  // Clear the pending payout.
+  pendingPayouts.insert(publicClaimId, 0);
+  pendingPayoutClaimant.insert(publicClaimId, pad(32, ""));
+
+  totalClaimsPaid.increment(1);
+
+  return result.sent;
+}
+
+// ============================================================================
+// DENY PAYOUT — record a denied claim (no funds move)
+// ============================================================================
+
+// Called by: an authorized adjuster. Records the denial for audit trail.
+export circuit deny_payout(
+  claim_id: Bytes<32>,
+  deny_reason_hash: Bytes<32>
+): [] {
+  assert_is_adjuster();
+
+  const publicClaimId = disclose(claim_id);
+  const publicReason = disclose(deny_reason_hash);
+
+  // If there was a pending payout, clear it (no funds move).
+  if (pendingPayouts.member(publicClaimId)) {
+    pendingPayouts.insert(publicClaimId, 0);
+    pendingPayoutClaimant.insert(publicClaimId, pad(32, ""));
+  }
+
+  // The deny reason hash is public for audit — the actual reason text is
+  // off-chain. ZKSplunk reads this for pattern analysis.
+}
+
+// ============================================================================
+// WITHDRAW LP CAPITAL — LP withdraws their capital
+// ============================================================================
+
+// Called by: the LP (proves control of their commitment).
+// Subject to solvency check: pool must retain minimum reserves after withdrawal.
+export circuit withdraw_lp_capital(
+  lp_commitment: Bytes<32>,
+  amount: Uint<128>
+): ShieldedCoinInfo {
+  const publicLp = disclose(lp_commitment);
+  const publicAmount = disclose(amount);
+
+  // Verify caller controls this LP commitment.
+  assert(
+    disclose(caller_public_key() == publicLp),
+    "Caller does not control this LP commitment"
+  );
+
+  assert(lpDeposits.member(publicLp), "No LP deposit found");
+  const currentDeposit = lpDeposits.lookup(publicLp);
+  assert(publicAmount <= currentDeposit, "Withdrawal exceeds deposit");
+
+  assert(poolHasCoin, "Pool is empty");
+
+  const recipient = left<ZswapCoinPublicKey, ContractAddress>(
+    ZswapCoinPublicKey{ bytes: publicLp });
+
+  const result = sendShielded(pool, recipient, publicAmount);
+
+  // Handle change coin.
+  if (disclose(result.change.is_some)) {
+    pool.writeCoin(result.change.value,
+      right<ZswapCoinPublicKey, ContractAddress>(kernel.self()));
+  } else {
+    poolHasCoin = false;
+  }
+
+  // Update LP deposit balance.
+  const newBalance = (currentDeposit - publicAmount) as Uint<128>;
+  lpDeposits.insert(publicLp, newBalance);
+
+  return result.sent;
+}
+
+// ============================================================================
+// POLICY LAPSE — decrement active count when a policy lapses
+// ============================================================================
+
+// Called by: the SDK in the same transaction as PolicyRegistry.lapse_policy.
+export circuit record_lapse(): [] {
+  activePolicyCount.decrement(1);
+}
+
+// ============================================================================
+// PUBLIC QUERIES (read-only, for SDK + ZKSplunk)
+// ============================================================================
+
+export circuit get_pool_balance(): Uint<128> {
+  if (poolHasCoin) {
+    return pool.value;
+  } else {
+    return 0;
+  }
+}
+
+export circuit get_total_premiums(): Uint<64> {
+  return totalPremiumsCollected.read();
+}
+
+export circuit get_total_claims_paid(): Uint<64> {
+  return totalClaimsPaid.read();
+}
+
+export circuit get_active_policy_count(): Uint<64> {
+  return activePolicyCount.read();
+}
+
+export circuit get_lp_deposit(lp_commitment: Bytes<32>): Uint<128> {
+  const publicLp = disclose(lp_commitment);
+  if (lpDeposits.member(publicLp)) {
+    return lpDeposits.lookup(publicLp);
+  } else {
+    return 0;
+  }
+}

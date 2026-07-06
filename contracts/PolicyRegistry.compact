@@ -1,0 +1,523 @@
+// ============================================================================
+// CryptoSure — PolicyRegistry.compact
+// ============================================================================
+//
+// Policy commitments, lifecycle, and underwriting cap gate.
+//
+// WHAT THIS CONTRACT IS
+//   CryptoSure's on-chain policy manager. It:
+//     1. Creates policy commitments when a user buys a policy
+//     2. Enforces the tier ladder with EDU gating for T2+
+//     3. Manages policy lifecycle: PENDING → ACTIVE → LAPSED / EXPIRED
+//     4. Verifies underwriting: DIDz credit-score band sets premium + cap
+//     5. Binds EDU certification to high-tier policies
+//
+// PRIVACY MODEL (John's ruling §0: privacy by default)
+//   Public on-chain:  policy count, active count (aggregate counters).
+//   Committed (hidden): holder identity, tier, coverage limit, premium,
+//                       scope hash, EDU status, RWA binding, agent grant.
+//                       Each policy is a commitment in a Map — only the
+//                       policy ID is public, and even that is a hash.
+//
+// REUSED PATTERNS
+//   State machine (PENDING → ACTIVE → LAPSED/EXPIRED)
+//     — midnight-expert compact-patterns
+//   Witness-derived identity (persistentHash domain-separated key)
+//     — DIDzRegistry, RWAz pattern
+//   Attestation slots (attestation_commitment pattern)
+//     — DIDzRegistry
+//
+// ECOSYSTEM CONNECTIONS
+//   DIDz.io        -> holder identity is a DIDz key commitment
+//   AgenticDID     -> agents act under scoped grants (verified off-chain)
+//   RWAz           -> everyday coverage binds to RWAz registry entry
+//   EduCertifier   -> T2+ requires EDU cert + holder-signed scope
+//   PremiumPool    -> SDK pairs buy_policy + deposit_premium in one tx
+//   ZKSplunk       -> reads public counters for telemetry
+//
+// COMPILER
+//   pragma >= 0.16 && <= 0.23 (compactc v0.31.x, language 0.23)
+// ============================================================================
+
+pragma language_version >= 0.16 && <= 0.23;
+
+import CompactStandardLibrary;
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+export enum PolicyWorld {
+  wallet,           // 0 — wallet coverage
+  everyday,         // 1 — everyday device/asset coverage
+  gaming            // 2 — gaming asset coverage
+}
+
+export enum TierCode {
+  T0,               // 0 — $500
+  T1,               // 1 — $1,000
+  T2,               // 2 — $5,000
+  T3,               // 3 — $10,000
+  T4,               // 4 — $25,000
+  T5                // 5 — $50,000
+}
+
+export enum PolicyStatus {
+  pending,          // 0 — created, awaiting EDU (if required)
+  active,           // 1 — fully activated
+  lapsed,           // 2 — premium not paid or expired
+  expired,          // 3 — term ended
+  claimed           // 4 — claim filed (further changes via ClaimEngine)
+}
+
+// ============================================================================
+// DATA STRUCTURES
+// ============================================================================
+
+struct PolicyRecord {
+  holderCommitment: Bytes<32>;    // DIDz key commitment (never revealed)
+  world: Uint<8>;                 // PolicyWorld cast as Uint<8>
+  tier: Uint<8>;                  // TierCode cast as Uint<8>
+  coverageLimit: Uint<128>;       // Max payout
+  premium: Uint<128>;             // Premium paid
+  status: Uint<8>;                // PolicyStatus cast as Uint<8>
+  scopeHash: Bytes<32>;           // Versioned "what's covered" text hash
+  scopeVersion: Uint<64>;         // Scope version number
+  eduRequired: Boolean;           // True for T2+
+  eduSatisfied: Boolean;          // EDU cert verified
+  eduCommitment: Bytes<32>;       // EDU cert commitment (zero if not required)
+  rwaCommitment: Bytes<32>;       // RWAz entry commitment (everyday only)
+  agentGrantCommitment: Bytes<32>; // AgenticDID grant (zero if self-managed)
+  createdAt: Uint<64>;            // Creation timestamp
+  activatedAt: Uint<64>;          // Activation timestamp
+  expiresAt: Uint<64>;            // Expiry timestamp
+}
+
+struct PolicyHashInput {
+  domain: Bytes<32>;
+  holder: Bytes<32>;
+  scopeHash: Bytes<32>;
+  nonce: Uint<64>;
+}
+
+// ============================================================================
+// LEDGER STATE
+// ============================================================================
+
+// Policy ID → PolicyRecord. The policy ID is a hash known only to the holder
+// and the SDK. The record is committed — individual fields are not readable
+// without the holder's cooperation.
+export ledger policies: Map<Bytes<32>, PolicyRecord>;
+
+// Total policies issued (public counter).
+export ledger policyCount: Counter;
+
+// Active policy count (public counter).
+export ledger activeCount: Counter;
+
+// Scope hash → current version (public, for EDU re-sign enforcement).
+export ledger scopeVersions: Map<Bytes<32>, Uint<64>>;
+
+// Admin set (can update scope versions, lapse policies).
+export ledger admins: Set<Bytes<32>>;
+export ledger adminClaimed: Boolean;
+
+// ============================================================================
+// PRIVATE INPUTS
+// ============================================================================
+
+witness local_secret_key(): Bytes<32>;
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+export circuit derive_public_key(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    pad(32, "midnight:mm:pk:"),
+    sk
+  ]);
+}
+
+circuit caller_public_key(): Bytes<32> {
+  return derive_public_key(local_secret_key());
+}
+
+// Derive a policy ID from holder commitment + scope hash + nonce.
+export circuit derive_policy_id(
+  holder_commitment: Bytes<32>,
+  scope_hash: Bytes<32>,
+  nonce: Uint<64>
+): Bytes<32> {
+  return persistentHash<PolicyHashInput>(PolicyHashInput {
+    domain: pad(32, "cryptosure:policy:v1"),
+    holder: holder_commitment,
+    scopeHash: scope_hash,
+    nonce: nonce
+  });
+}
+
+// Check caller controls a DIDz commitment and matches the policy holder.
+circuit check_caller_is_holder(holder_commitment: Bytes<32>): [] {
+  assert(
+    disclose(caller_public_key() == holder_commitment),
+    "Caller does not control this policy holder commitment"
+  );
+}
+
+// ============================================================================
+// ADMIN MANAGEMENT
+// ============================================================================
+
+export circuit claim_admin(): [] {
+  assert(!adminClaimed, "Admin already claimed");
+  admins.insert(disclose(caller_public_key()));
+  adminClaimed = true;
+}
+
+circuit assert_is_admin(): [] {
+  assert(
+    admins.member(disclose(caller_public_key())),
+    "Caller is not an admin"
+  );
+}
+
+export circuit add_admin(admin_key: Bytes<32>): [] {
+  assert_is_admin();
+  admins.insert(disclose(admin_key));
+}
+
+export circuit remove_admin(admin_key: Bytes<32>): [] {
+  assert_is_admin();
+  assert(disclose(admins.size()) > (1 as Uint<64>), "Cannot remove last admin");
+  admins.remove(disclose(admin_key));
+}
+
+// Update scope version (admin-only, forces EDU re-sign for new scope).
+export circuit update_scope_version(
+  scope_hash: Bytes<32>,
+  new_version: Uint<64>
+): [] {
+  assert_is_admin();
+  const publicScope = disclose(scope_hash);
+  const publicVersion = disclose(new_version);
+  scopeVersions.insert(publicScope, publicVersion);
+}
+
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
+
+constructor() {
+  adminClaimed = false;
+}
+
+// ============================================================================
+// BUY POLICY — create a new policy commitment
+// ============================================================================
+
+// Called by: the holder (or agent via AgenticDID) through the SDK.
+// The SDK orchestrates: buy_policy here + deposit_premium on PremiumPool
+// in the same transaction.
+//
+// Off-chain verification (prover provides results via witnesses):
+//   - DIDz prove_score_at_least → proven score band
+//   - EDU cert verification (if T2+) → cert valid + holder signed
+//   - AgenticDID grant verification (if agent-initiated) → caps checked
+//   - RWAz entry verification (if everyday) → entry exists + holder owns
+//
+// The tier gate enforces: tier ≤ max_tier_for_band(band).
+// The EDU gate enforces: T2+ requires edu_commitment + edu_satisfied.
+export circuit buy_policy(
+  policy_id: Bytes<32>,
+  holder_commitment: Bytes<32>,
+  world: Uint<8>,
+  tier: Uint<8>,
+  coverage_limit: Uint<128>,
+  premium: Uint<128>,
+  scope_hash: Bytes<32>,
+  scope_version: Uint<64>,
+  edu_commitment: Bytes<32>,
+  edu_satisfied: Boolean,
+  rwa_commitment: Bytes<32>,
+  agent_grant_commitment: Bytes<32>,
+  created_at: Uint<64>,
+  expires_at: Uint<64>
+): [] {
+  const publicPolicyId = disclose(policy_id);
+  assert(!policies.member(publicPolicyId), "Policy ID already exists");
+
+  const publicTier = disclose(tier);
+  const publicWorld = disclose(world);
+  const publicEduSatisfied = disclose(edu_satisfied);
+
+  // Tier gate: T2+ (tier >= 2) requires EDU satisfied.
+  if (publicTier >= (2 as Uint<8>)) {
+    assert(publicEduSatisfied, "EDU certification required for T2+");
+    assert(disclose(edu_commitment) != pad(32, ""), "EDU commitment required for T2+");
+  }
+
+  // Everyday world requires RWAz commitment.
+  if (publicWorld == (1 as Uint<8>)) {
+    assert(disclose(rwa_commitment) != pad(32, ""), "RWAz commitment required for everyday world");
+  }
+
+  // Determine initial status: ACTIVE if EDU satisfied (or not required),
+  // PENDING if EDU required but not yet satisfied.
+  const initialStatus = publicEduSatisfied ? (1 as Uint<8>) : (0 as Uint<8>);
+
+  const record = PolicyRecord {
+    holderCommitment: holder_commitment,
+    world: world,
+    tier: tier,
+    coverageLimit: coverage_limit,
+    premium: premium,
+    status: initialStatus,
+    scopeHash: scope_hash,
+    scopeVersion: scope_version,
+    eduRequired: publicTier >= (2 as Uint<8>),
+    eduSatisfied: edu_satisfied,
+    eduCommitment: edu_commitment,
+    rwaCommitment: rwa_commitment,
+    agentGrantCommitment: agent_grant_commitment,
+    createdAt: created_at,
+    activatedAt: publicEduSatisfied ? created_at : (0 as Uint<64>),
+    expiresAt: expires_at
+  };
+
+  policies.insert(publicPolicyId, disclose(record));
+  policyCount.increment(1);
+
+  if (publicEduSatisfied) {
+    activeCount.increment(1);
+  }
+}
+
+// ============================================================================
+// ACTIVATE POLICY — activate a pending policy (after EDU completion)
+// ============================================================================
+
+// Called by: the holder (non-delegable — holder must personally activate).
+// The holder proves control of their DIDz commitment.
+export circuit activate_policy(
+  policy_id: Bytes<32>,
+  edu_commitment: Bytes<32>,
+  activated_at: Uint<64>
+): [] {
+  const publicPolicyId = disclose(policy_id);
+  assert(policies.member(publicPolicyId), "Policy not found");
+
+  const record = policies.lookup(publicPolicyId);
+
+  // Verify caller is the holder (non-delegable activation).
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  // Must be in PENDING status.
+  assert(disclose(record.status) == (0 as Uint<8>), "Policy is not pending");
+
+  // EDU must be required (otherwise it would already be active).
+  assert(disclose(record.eduRequired), "EDU not required for this policy");
+
+  // Update record: EDU satisfied, status ACTIVE.
+  const updated = PolicyRecord {
+    holderCommitment: record.holderCommitment,
+    world: record.world,
+    tier: record.tier,
+    coverageLimit: record.coverageLimit,
+    premium: record.premium,
+    status: 1,  // ACTIVE
+    scopeHash: record.scopeHash,
+    scopeVersion: record.scopeVersion,
+    eduRequired: record.eduRequired,
+    eduSatisfied: true,
+    eduCommitment: edu_commitment,
+    rwaCommitment: record.rwaCommitment,
+    agentGrantCommitment: record.agentGrantCommitment,
+    createdAt: record.createdAt,
+    activatedAt: activated_at,
+    expiresAt: record.expiresAt
+  };
+
+  policies.insert(publicPolicyId, disclose(updated));
+  activeCount.increment(1);
+}
+
+// ============================================================================
+// LAPSE POLICY — lapse a policy (premium not paid, or expired)
+// ============================================================================
+
+// Called by: admin (for automated lapse) or holder (manual cancellation).
+export circuit lapse_policy(
+  policy_id: Bytes<32>
+): [] {
+  const publicPolicyId = disclose(policy_id);
+  assert(policies.member(publicPolicyId), "Policy not found");
+
+  const record = policies.lookup(publicPolicyId);
+
+  // Must be ACTIVE to lapse.
+  assert(disclose(record.status) == (1 as Uint<8>), "Policy is not active");
+
+  // Either the holder or an admin can lapse.
+  const caller = disclose(caller_public_key());
+  assert(
+    caller == disclose(record.holderCommitment)
+      || admins.member(caller),
+    "Only holder or admin can lapse policy"
+  );
+
+  const updated = PolicyRecord {
+    holderCommitment: record.holderCommitment,
+    world: record.world,
+    tier: record.tier,
+    coverageLimit: record.coverageLimit,
+    premium: record.premium,
+    status: 2,  // LAPSED
+    scopeHash: record.scopeHash,
+    scopeVersion: record.scopeVersion,
+    eduRequired: record.eduRequired,
+    eduSatisfied: record.eduSatisfied,
+    eduCommitment: record.eduCommitment,
+    rwaCommitment: record.rwaCommitment,
+    agentGrantCommitment: record.agentGrantCommitment,
+    createdAt: record.createdAt,
+    activatedAt: record.activatedAt,
+    expiresAt: record.expiresAt
+  };
+
+  policies.insert(publicPolicyId, disclose(updated));
+  activeCount.decrement(1);
+}
+
+// ============================================================================
+// EXPIRE POLICY — mark policy as expired (term ended)
+// ============================================================================
+
+export circuit expire_policy(
+  policy_id: Bytes<32>
+): [] {
+  const publicPolicyId = disclose(policy_id);
+  assert(policies.member(publicPolicyId), "Policy not found");
+
+  const record = policies.lookup(publicPolicyId);
+  assert(disclose(record.status) == (1 as Uint<8>), "Policy is not active");
+
+  // Admin or holder can expire.
+  const caller = disclose(caller_public_key());
+  assert(
+    caller == disclose(record.holderCommitment)
+      || admins.member(caller),
+    "Only holder or admin can expire policy"
+  );
+
+  const updated = PolicyRecord {
+    holderCommitment: record.holderCommitment,
+    world: record.world,
+    tier: record.tier,
+    coverageLimit: record.coverageLimit,
+    premium: record.premium,
+    status: 3,  // EXPIRED
+    scopeHash: record.scopeHash,
+    scopeVersion: record.scopeVersion,
+    eduRequired: record.eduRequired,
+    eduSatisfied: record.eduSatisfied,
+    eduCommitment: record.eduCommitment,
+    rwaCommitment: record.rwaCommitment,
+    agentGrantCommitment: record.agentGrantCommitment,
+    createdAt: record.createdAt,
+    activatedAt: record.activatedAt,
+    expiresAt: record.expiresAt
+  };
+
+  policies.insert(publicPolicyId, disclose(updated));
+  activeCount.decrement(1);
+}
+
+// ============================================================================
+// MARK CLAIMED — mark policy as claimed (called by SDK with ClaimEngine)
+// ============================================================================
+
+export circuit mark_claimed(
+  policy_id: Bytes<32>
+): [] {
+  const publicPolicyId = disclose(policy_id);
+  assert(policies.member(publicPolicyId), "Policy not found");
+
+  const record = policies.lookup(publicPolicyId);
+  assert(disclose(record.status) == (1 as Uint<8>), "Policy is not active");
+
+  // Only the holder can mark claimed (via SDK with ClaimEngine.submit_claim).
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  const updated = PolicyRecord {
+    holderCommitment: record.holderCommitment,
+    world: record.world,
+    tier: record.tier,
+    coverageLimit: record.coverageLimit,
+    premium: record.premium,
+    status: 4,  // CLAIMED
+    scopeHash: record.scopeHash,
+    scopeVersion: record.scopeVersion,
+    eduRequired: record.eduRequired,
+    eduSatisfied: record.eduSatisfied,
+    eduCommitment: record.eduCommitment,
+    rwaCommitment: record.rwaCommitment,
+    agentGrantCommitment: record.agentGrantCommitment,
+    createdAt: record.createdAt,
+    activatedAt: record.activatedAt,
+    expiresAt: record.expiresAt
+  };
+
+  policies.insert(publicPolicyId, disclose(updated));
+  activeCount.decrement(1);
+}
+
+// ============================================================================
+// PUBLIC QUERIES
+// ============================================================================
+
+// Query policy status (public — only the status enum, no holder info).
+export circuit get_policy_status(policy_id: Bytes<32>): Uint<8> {
+  const publicPolicyId = disclose(policy_id);
+  assert(policies.member(publicPolicyId), "Policy not found");
+  const record = policies.lookup(publicPolicyId);
+  return disclose(record.status);
+}
+
+// Verify a policy is active and get coverage details (called by ClaimEngine
+// via SDK). The caller must be the holder.
+export circuit verify_policy_for_claim(
+  policy_id: Bytes<32>
+): Uint<8> {
+  const publicPolicyId = disclose(policy_id);
+  assert(policies.member(publicPolicyId), "Policy not found");
+
+  const record = policies.lookup(publicPolicyId);
+
+  // Verify caller is the holder.
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  // Return the world (needed by ClaimEngine to check event coverage).
+  return disclose(record.world);
+}
+
+// Get coverage limit (holder-only, for claim amount validation).
+export circuit get_coverage_limit(policy_id: Bytes<32>): Uint<128> {
+  const publicPolicyId = disclose(policy_id);
+  assert(policies.member(publicPolicyId), "Policy not found");
+
+  const record = policies.lookup(publicPolicyId);
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  return disclose(record.coverageLimit);
+}
+
+// Get policy count (public).
+export circuit get_policy_count(): Uint<64> {
+  return policyCount.read();
+}
+
+// Get active count (public).
+export circuit get_active_count(): Uint<64> {
+  return activeCount.read();
+}

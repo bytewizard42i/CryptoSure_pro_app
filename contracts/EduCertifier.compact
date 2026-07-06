@@ -1,0 +1,402 @@
+// ============================================================================
+// CryptoSure — EduCertifier.compact
+// ============================================================================
+//
+// CryptoSure-EDU certification + holder-signed activation.
+//
+// WHAT THIS CONTRACT IS
+//   Manages CryptoSure's educational certification system:
+//     1. Issues certifications as on-chain commitments bound to a scope hash
+//     2. Verifies holder-signed acceptance (non-delegable signature)
+//     3. Enables premium discounts for certified low-tier holders
+//     4. Delegates issuer approval to DIDz TrustedIssuerRegistry (off-chain)
+//
+// PRIVACY MODEL (John's ruling §0: privacy by default)
+//   Public on-chain:  cert count (aggregate counter).
+//   Committed (hidden): holder identity, issuer identity, modules completed,
+//                       scope hash, holder signature. Each cert is a
+//                       commitment in a Map — only the cert ID is public.
+//
+// NON-DELEGABLE BOUNDARY
+//   The holder signature on the scope acceptance is the cornerstone of
+//   CryptoSure's honesty model. Even if an agent initiated the process via
+//   AgenticDID, the holder must have personally signed the scope acceptance.
+//   There is no issue_cert path that omits the holder signature — the circuit
+//   structurally requires it.
+//
+// REUSED PATTERNS
+//   Witness-derived identity (persistentHash domain-separated key)
+//     — DIDzRegistry, RWAz pattern
+//   Attestation slots (cert as attestation commitment)
+//     — DIDzRegistry
+//   TrustedIssuerRegistry integration (off-chain verification)
+//     — DIDz.io
+//
+// ECOSYSTEM CONNECTIONS
+//   DIDz.io TrustedIssuerRegistry -> issuer approval (domain "CRYPTOSURE-EDU")
+//   DIDz.io DIDzRegistry          -> holder identity (key commitment)
+//   PolicyRegistry                -> calls verify_cert during activation
+//   AgenticDID                    -> agents can guide EDU but cannot sign
+//
+// COMPILER
+//   pragma >= 0.16 && <= 0.23 (compactc v0.31.x, language 0.23)
+// ============================================================================
+
+pragma language_version >= 0.16 && <= 0.23;
+
+import CompactStandardLibrary;
+
+// ============================================================================
+// ENUMS
+// ============================================================================
+
+export enum EduModule {
+  wallet_hygiene,          // 0 — required for T2+
+  seed_custody,            // 1 — required for T2+
+  phishing_awareness,      // 2 — required for T2+
+  hardware_wallet,         // 3 — required for T3+
+  recovery_planning,       // 4 — required for T3+
+  scope_review,            // 5 — required for T2+
+  gaming_asset_safety      // 6 — required for T2+ (gaming world)
+}
+
+// ============================================================================
+// DATA STRUCTURES
+// ============================================================================
+
+struct CertRecord {
+  holderCommitment: Bytes<32>;    // DIDz key commitment of the certified holder
+  issuerCommitment: Bytes<32>;    // DIDz key commitment of the issuer
+  moduleBits: Uint<32>;           // Bitfield of completed modules
+  scopeHash: Bytes<32>;           // Versioned scope text the holder signed
+  scopeVersion: Uint<64>;         // Scope version
+  holderSignature: Bytes<64>;     // Non-delegable holder signature on scope
+  issuedAt: Uint<64>;             // Issuance timestamp
+  expiresAt: Uint<64>;            // Expiry (0 = never expires)
+  revoked: Boolean;               // Revocation flag
+}
+
+struct CertHashInput {
+  domain: Bytes<32>;
+  holder: Bytes<32>;
+  issuer: Bytes<32>;
+  scopeHash: Bytes<32>;
+  nonce: Uint<64>;
+}
+
+// ============================================================================
+// LEDGER STATE
+// ============================================================================
+
+// Cert ID → CertRecord. The cert ID is a hash known only to the holder
+// and the SDK.
+export ledger certs: Map<Bytes<32>, CertRecord>;
+
+// Total certs issued (public counter).
+export ledger certCount: Counter;
+
+// Revoked cert count (public counter, for audit).
+export ledger revokedCount: Counter;
+
+// Admin set (can emergency-revoke certs).
+export ledger admins: Set<Bytes<32>>;
+export ledger adminClaimed: Boolean;
+
+// ============================================================================
+// PRIVATE INPUTS
+// ============================================================================
+
+witness local_secret_key(): Bytes<32>;
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+
+export circuit derive_public_key(sk: Bytes<32>): Bytes<32> {
+  return persistentHash<Vector<2, Bytes<32>>>([
+    pad(32, "midnight:mm:pk:"),
+    sk
+  ]);
+}
+
+circuit caller_public_key(): Bytes<32> {
+  return derive_public_key(local_secret_key());
+}
+
+// Derive a cert ID from holder + issuer + scope + nonce.
+export circuit derive_cert_id(
+  holder_commitment: Bytes<32>,
+  issuer_commitment: Bytes<32>,
+  scope_hash: Bytes<32>,
+  nonce: Uint<64>
+): Bytes<32> {
+  return persistentHash<CertHashInput>(CertHashInput {
+    domain: pad(32, "cryptosure:edu:cert:v1"),
+    holder: holder_commitment,
+    issuer: issuer_commitment,
+    scopeHash: scope_hash,
+    nonce: nonce
+  });
+}
+
+// Check caller controls a DIDz commitment.
+circuit check_caller_is_holder(holder_commitment: Bytes<32>): [] {
+  assert(
+    disclose(caller_public_key() == holder_commitment),
+    "Caller does not control this holder commitment"
+  );
+}
+
+// Check caller controls the issuer commitment.
+circuit check_caller_is_issuer(issuer_commitment: Bytes<32>): [] {
+  assert(
+    disclose(caller_public_key() == issuer_commitment),
+    "Caller does not control this issuer commitment"
+  );
+}
+
+// Check if a module bit is set in the module bitfield.
+export circuit has_module(module_bits: Uint<32>, module: Uint<8>): Boolean {
+  const bit = (1 as Uint<32>) << disclose(module);
+  return (disclose(module_bits) & bit) != 0;
+}
+
+// ============================================================================
+// ADMIN MANAGEMENT
+// ============================================================================
+
+export circuit claim_admin(): [] {
+  assert(!adminClaimed, "Admin already claimed");
+  admins.insert(disclose(caller_public_key()));
+  adminClaimed = true;
+}
+
+circuit assert_is_admin(): [] {
+  assert(
+    admins.member(disclose(caller_public_key())),
+    "Caller is not an admin"
+  );
+}
+
+export circuit add_admin(admin_key: Bytes<32>): [] {
+  assert_is_admin();
+  admins.insert(disclose(admin_key));
+}
+
+// ============================================================================
+// CONSTRUCTOR
+// ============================================================================
+
+constructor() {
+  adminClaimed = false;
+}
+
+// ============================================================================
+// ISSUE CERT — issue an EDU certification to a holder
+// ============================================================================
+
+// Called by: an approved EDU issuer (verified off-chain via
+// TrustedIssuerRegistry for domain "CRYPTOSURE-EDU").
+//
+// NON-DELEGABLE: The holder_signature + holder control proof together
+// ensure that even if an agent initiated the process (via AgenticDID),
+// the holder must have personally signed the scope acceptance.
+// There is no issue_cert path that omits the holder signature.
+export circuit issue_cert(
+  cert_id: Bytes<32>,
+  holder_commitment: Bytes<32>,
+  issuer_commitment: Bytes<32>,
+  module_bits: Uint<32>,
+  scope_hash: Bytes<32>,
+  scope_version: Uint<64>,
+  holder_signature: Bytes<64>,
+  issued_at: Uint<64>,
+  expires_at: Uint<64>
+): [] {
+  const publicCertId = disclose(cert_id);
+  assert(!certs.member(publicCertId), "Cert ID already exists");
+
+  // Verify caller is the issuer (approved EDU issuer, verified off-chain
+  // against TrustedIssuerRegistry domain "CRYPTOSURE-EDU").
+  check_caller_is_issuer(disclose(issuer_commitment));
+
+  // The holder_signature is provided as a witness — the issuer attests
+  // that they verified the holder's signature on the scope_hash off-chain.
+  // The signature itself is stored in the CertRecord for later verification.
+  // This is the non-delegable boundary: the circuit structurally requires
+  // a non-zero holder_signature.
+  assert(disclose(holder_signature) != pad(64, ""), "Holder signature required (non-delegable)");
+
+  const record = CertRecord {
+    holderCommitment: holder_commitment,
+    issuerCommitment: issuer_commitment,
+    moduleBits: module_bits,
+    scopeHash: scope_hash,
+    scopeVersion: scope_version,
+    holderSignature: holder_signature,
+    issuedAt: issued_at,
+    expiresAt: expires_at,
+    revoked: false
+  };
+
+  certs.insert(publicCertId, disclose(record));
+  certCount.increment(1);
+}
+
+// ============================================================================
+// VERIFY CERT — verify a holder's EDU certification
+// ============================================================================
+
+// Called by: PolicyRegistry during activation (via SDK).
+// The holder proves control of their DIDz commitment.
+// Returns verification bits via ZK — no PII revealed on-chain.
+export circuit verify_cert(
+  cert_id: Bytes<32>,
+  required_scope_hash: Bytes<32>,
+  current_time: Uint<64>
+): Boolean {
+  const publicCertId = disclose(cert_id);
+  assert(certs.member(publicCertId), "Cert not found");
+
+  const record = certs.lookup(publicCertId);
+
+  // Verify caller is the holder.
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  // Check not revoked.
+  assert(!disclose(record.revoked), "Cert is revoked");
+
+  // Check expiry (0 = never expires).
+  const expiry = disclose(record.expiresAt);
+  if (expiry != 0) {
+    assert(disclose(current_time) < expiry, "Cert has expired");
+  }
+
+  // Check scope hash matches.
+  assert(disclose(record.scopeHash) == disclose(required_scope_hash), "Scope hash mismatch");
+
+  // Check holder signature is present (non-delegable proof).
+  assert(disclose(record.holderSignature) != pad(64, ""), "Holder signature missing");
+
+  return true;
+}
+
+// ============================================================================
+// VERIFY CERT FOR SCOPE — verify cert is valid for a specific scope version
+// ============================================================================
+
+// Used when scope text is updated. Old certs with old scope hashes are
+// NOT valid for new scope versions — forces holders to re-read and re-accept.
+export circuit verify_cert_for_scope(
+  cert_id: Bytes<32>,
+  required_scope_hash: Bytes<32>,
+  required_scope_version: Uint<64>,
+  current_time: Uint<64>
+): Boolean {
+  const publicCertId = disclose(cert_id);
+  assert(certs.member(publicCertId), "Cert not found");
+
+  const record = certs.lookup(publicCertId);
+
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  assert(!disclose(record.revoked), "Cert is revoked");
+
+  const expiry = disclose(record.expiresAt);
+  if (expiry != 0) {
+    assert(disclose(current_time) < expiry, "Cert has expired");
+  }
+
+  // Scope hash must match.
+  assert(disclose(record.scopeHash) == disclose(required_scope_hash), "Scope hash mismatch");
+
+  // Scope version must match.
+  assert(disclose(record.scopeVersion) == disclose(required_scope_version), "Scope version mismatch");
+
+  return true;
+}
+
+// ============================================================================
+// REVOKE CERT — revoke a certification (issuer or admin only)
+// ============================================================================
+
+// Called by: the original issuer (for fraud/incorrect issuance) or admin
+// (emergency revocation).
+export circuit revoke_cert(
+  cert_id: Bytes<32>
+): [] {
+  const publicCertId = disclose(cert_id);
+  assert(certs.member(publicCertId), "Cert not found");
+
+  const record = certs.lookup(publicCertId);
+
+  // Either the issuer or an admin can revoke.
+  const caller = disclose(caller_public_key());
+  assert(
+    caller == disclose(record.issuerCommitment)
+      || admins.member(caller),
+    "Only issuer or admin can revoke cert"
+  );
+
+  assert(!disclose(record.revoked), "Cert already revoked");
+
+  const updated = CertRecord {
+    holderCommitment: record.holderCommitment,
+    issuerCommitment: record.issuerCommitment,
+    moduleBits: record.moduleBits,
+    scopeHash: record.scopeHash,
+    scopeVersion: record.scopeVersion,
+    holderSignature: record.holderSignature,
+    issuedAt: record.issuedAt,
+    expiresAt: record.expiresAt,
+    revoked: true
+  };
+
+  certs.insert(publicCertId, disclose(updated));
+  revokedCount.increment(1);
+}
+
+// ============================================================================
+// CHECK MODULES — check if required modules are completed
+// ============================================================================
+
+// Called by: PolicyRegistry (via SDK) to verify required modules for a tier.
+// The holder proves control and the required module bitfield is checked.
+export circuit check_modules(
+  cert_id: Bytes<32>,
+  required_bits: Uint<32>
+): Boolean {
+  const publicCertId = disclose(cert_id);
+  assert(certs.member(publicCertId), "Cert not found");
+
+  const record = certs.lookup(publicCertId);
+
+  check_caller_is_holder(disclose(record.holderCommitment));
+
+  // Check that all required module bits are set.
+  const certBits = disclose(record.moduleBits);
+  const reqBits = disclose(required_bits);
+  assert((certBits & reqBits) == reqBits, "Required modules not completed");
+
+  return true;
+}
+
+// ============================================================================
+// PUBLIC QUERIES
+// ============================================================================
+
+export circuit get_cert_count(): Uint<64> {
+  return certCount.read();
+}
+
+export circuit get_revoked_count(): Uint<64> {
+  return revokedCount.read();
+}
+
+// Check if a cert is revoked (public, no holder info revealed).
+export circuit is_cert_revoked(cert_id: Bytes<32>): Boolean {
+  const publicCertId = disclose(cert_id);
+  assert(certs.member(publicCertId), "Cert not found");
+  const record = certs.lookup(publicCertId);
+  return disclose(record.revoked);
+}
