@@ -25,7 +25,7 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 - [x] demoLand vs realDeal convention doc
 - [x] New client onboarding template (5-step DIDz → coverage → EDU → agent → confirm)
 - [x] AI integration plan (3-phase: rule-based → LLM → conversational)
-- [ ] Honest coverage-scope doc: what wallet insurance IS and IS NOT responsible for (detailed scope text)
+- [x] Honest coverage-scope doc: detailed scope text (`docs/COVERAGE_SCOPE.md` — v1.0.0, 4 covered events, 10 exclusions, 6 conditions)
 
 ## Phase 1 — Core contracts (DONE: written + compile-validated)
 

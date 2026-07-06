@@ -1,7 +1,7 @@
 # CryptoSure — Architecture
 
 **Date**: July 6, 2026
-**Status**: Design (contracts not yet written; validated via Midnight MCP before coding)
+**Status**: Contracts written + compile-validated (Midnight MCP skipZk). See `docs/CONTRACTS_OVERVIEW.md`.
 
 This document maps the insurance lifecycle onto Midnight/Compact primitives, reusing the
 patterns catalogued in `midnight-expert` (the primary source of truth) and the DIDz

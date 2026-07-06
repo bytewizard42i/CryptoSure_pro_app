@@ -74,7 +74,7 @@ like `providers.policies.listPolicies()` — it never checks the mode.
 
 ---
 
-## What realDeal Will Do
+## What realDeal Does (providers implemented, SDK wiring pending)
 
 - **Auth**: Midnight wallet connection (Passport or compatible wallet).
   DIDz commitment derived from the wallet's signing key.
@@ -125,7 +125,7 @@ like `providers.policies.listPolicies()` — it never checks the mode.
 cd frontend-demoland
 npm run dev
 
-# realDeal (will throw until providers are implemented)
+# realDeal (providers implemented, throws until @midnight-ntwrk/sdk is installed)
 VITE_CS_MODE=realdeal npm run dev
 ```
 
@@ -133,7 +133,7 @@ VITE_CS_MODE=realdeal npm run dev
 
 ```bash
 VITE_CS_MODE=demoland npm run build   # demo deployment
-VITE_CS_MODE=realdeal npm run build   # production (not yet functional)
+VITE_CS_MODE=realdeal npm run build   # production (requires @midnight-ntwrk/sdk installed)
 ```
 
 ---
@@ -142,7 +142,7 @@ VITE_CS_MODE=realdeal npm run build   # production (not yet functional)
 
 1. Add the interface to `types.ts`
 2. Implement the mock in `providers/demoland/mock-*.ts`
-3. Add a stub in `providers/realdeal/index.ts` (throw until implemented)
+3. Implement in `providers/realdeal/` (wrap SDK contract client, throw until SDK connected)
 4. Wire into `providers/demoland/index.ts` and the `Providers` interface
 5. Use `useProviders()` in any page — it works in both modes
 
@@ -151,5 +151,8 @@ VITE_CS_MODE=realdeal npm run build   # production (not yet functional)
 ## Status
 
 - **demoLand**: Fully functional with mock data for all 9 providers
-- **realDeal**: Stub only — throws on instantiation. Will be implemented
-  when Compact contracts are deployed (see `ROADMAP.md` Phase 1–4).
+- **realDeal**: 9 provider implementations written (auth, creditScore, policy,
+  claim, edu, pool, didz, agenticDID, ai). Each wraps an SDK contract client
+  and throws with a clear "SDK not connected" message until `@midnight-ntwrk/sdk`
+  is installed. TypeScript SDK layer includes contract types, client classes,
+  and multi-contract transaction orchestration helpers. See `ROADMAP.md` Phase 7.

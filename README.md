@@ -133,6 +133,7 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 | `docs/ONBOARDING_TEMPLATE.md` | 5-step new client onboarding: DIDz identity → coverage → EDU → agent delegation → confirm. |
 | `docs/AI_INTEGRATION.md` | Phased AI plan: rule-based pre-screening → LLM recommendations → conversational assistant → AI underwriting. |
 | `docs/CONTRACTS_OVERVIEW.md` | Quick reference for all 4 contracts: circuits, types, privacy model, ecosystem integration. |
+| `docs/COVERAGE_SCOPE.md` | The actual policy scope text (v1.0.0). Hashed as scopeHash in every policy. 4 covered events, 10 exclusions, 6 conditions. |
 | `contracts/` | Compact smart contracts (PremiumPool, PolicyRegistry, EduCertifier, ClaimEngine). Written + compile-validated. |
 | `frontend-demoland/src/sdk/` | TypeScript SDK: contract types, client classes, multi-tx orchestration helpers. |
 | `frontend-demoland/src/providers/realdeal/` | realDeal provider implementations (9 files wiring UI to SDK contract clients). |
