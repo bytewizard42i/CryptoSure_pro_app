@@ -27,37 +27,37 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 - [x] AI integration plan (3-phase: rule-based → LLM → conversational)
 - [ ] Honest coverage-scope doc: what wallet insurance IS and IS NOT responsible for (detailed scope text)
 
-## Phase 1 — Core contracts (design stubs done → validate + write .compact)
+## Phase 1 — Core contracts (DONE: written + compile-validated)
 
-- [x] `PremiumPool` — design stub (6 circuits: deposit_premium, deposit_lp, authorize_payout, release_payout, deny_payout, withdraw_lp)
-- [x] `PolicyRegistry` — design stub (5 circuits: buy_policy, activate_policy, lapse_policy, get_policy_status, verify_policy_for_claim)
+- [x] `PremiumPool` — written + validated (8 circuits: deposit_premium, deposit_lp_capital, authorize_payout, release_payout, deny_payout, withdraw_lp_capital, record_lapse, get_pool_balance)
+- [x] `PolicyRegistry` — written + validated (10 circuits: buy_policy, activate_policy, lapse_policy, expire_policy, mark_claimed, get_policy_status, verify_policy_for_claim, get_coverage_limit, get_policy_count, get_active_count)
 - [x] Underwriting circuit design — DIDz `prove_score_at_least` consumed by buy_policy
 - [x] Tier enforcement design — cap ladder, EDU-required gate for tiers ≥ $5k, score-scaled agent ceiling
-- [ ] Validate all stubs via Midnight MCP (`midnight-compile-contract` skipZk)
-- [ ] Write `.compact` files after validation
+- [x] Validate all contracts via Midnight MCP (`midnight-compile-contract` skipZk) — all 4 passed static analysis
+- [x] Write `.compact` files — all 4 in `contracts/` directory
 - [ ] Local `compact compile` with full ZK key generation
 
-## Phase 2 — CryptoSure-EDU
+## Phase 2 — CryptoSure-EDU (DONE: written + compile-validated)
 
-- [x] `EduCertifier` — design stub (5 circuits: issue_cert, verify_cert, verify_cert_for_scope, revoke_cert, list_modules)
+- [x] `EduCertifier` — written + validated (8 circuits: issue_cert, verify_cert, verify_cert_for_scope, revoke_cert, check_modules, has_module, get_cert_count, is_cert_revoked)
 - [x] EDU issuer approval design — via DIDz `TrustedIssuerRegistry` (domain = "CRYPTOSURE-EDU")
 - [x] Cert attestation design — DIDz `attest_to_did` + scope-hash binding
 - [x] Holder-signed activation proof design — non-delegable, ZK-verified
 - [x] Non-delegable boundary documented — agent/AI cannot sign EDU acceptance
-- [ ] Validate EduCertifier stub via Midnight MCP
-- [ ] Write `.compact` file after validation
+- [x] Validate EduCertifier via Midnight MCP — passed static analysis
+- [x] Write `.compact` file — `contracts/EduCertifier.compact`
 - [ ] Premium discount for certified low-tier holders
 
-## Phase 3 — Claims & payout
+## Phase 3 — Claims & payout (DONE: written + compile-validated)
 
-- [x] `ClaimEngine` — design stub (7 circuits: submit_claim, assign_adjuster, submit_forensic_report, approve_claim, deny_claim, confirm_payout, dispute_claim)
+- [x] `ClaimEngine` — written + validated (12 circuits: submit_claim, assign_adjuster, submit_forensic_report, approve_claim, deny_claim, confirm_payout, dispute_claim, reassign_disputed_claim, get_claim_status, get_claim_count, get_pending_count, get_dispute_window)
 - [x] Anti-double-claim nullifier design — SCIFz pattern, `hash(holder, policy, event, loss_id)`
 - [x] Selective disclosure design — adjuster-only, ZK-verified
 - [x] Escrow-style payout design — PremiumPool.authorize_payout → release_payout
 - [x] Dispute window design — time-windowed re-opening of denied claims
 - [x] Forensic report integration design — report hash anchored on-chain, ZKSplunk attests
-- [ ] Validate ClaimEngine stub via Midnight MCP
-- [ ] Write `.compact` file after validation
+- [x] Validate ClaimEngine via Midnight MCP — passed static analysis
+- [x] Write `.compact` file — `contracts/ClaimEngine.compact`
 
 ## Phase 4 — Ecosystem integration
 
@@ -90,4 +90,8 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 - [x] 9 mock providers: auth, creditScore, policies, claims, edu, pool, didz, agenticDID, ai
 - [x] DIDz + AgenticDID placeholder integration with TODO markers
 - [x] demoLand vs realDeal convention doc
+- [x] TypeScript SDK layer: contract-types.ts + contract-helpers.ts + index.ts
+- [x] realDeal providers: 9 files (auth, creditScore, policy, claim, edu, pool, didz, agenticDID, ai)
+- [x] Multi-contract transaction orchestration helpers (buyPolicy, submitClaim, approveClaim, releasePayout)
+- [ ] realDeal: install @midnight-ntwrk/sdk → wire providers to actual SDK calls
 - [ ] realDeal: local Midnight stack → pre-prod (skip preview per house convention)

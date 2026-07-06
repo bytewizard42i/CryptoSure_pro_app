@@ -132,7 +132,10 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 | `docs/DEMOLAND_VS_REALDEAL.md` | demoLand vs realDeal convention: provider architecture, mode switching, ecosystem connections. |
 | `docs/ONBOARDING_TEMPLATE.md` | 5-step new client onboarding: DIDz identity → coverage → EDU → agent delegation → confirm. |
 | `docs/AI_INTEGRATION.md` | Phased AI plan: rule-based pre-screening → LLM recommendations → conversational assistant → AI underwriting. |
-| `contracts/` | Compact contract design stubs (PremiumPool, PolicyRegistry, EduCertifier, ClaimEngine). Design-only. |
+| `docs/CONTRACTS_OVERVIEW.md` | Quick reference for all 4 contracts: circuits, types, privacy model, ecosystem integration. |
+| `contracts/` | Compact smart contracts (PremiumPool, PolicyRegistry, EduCertifier, ClaimEngine). Written + compile-validated. |
+| `frontend-demoland/src/sdk/` | TypeScript SDK: contract types, client classes, multi-tx orchestration helpers. |
+| `frontend-demoland/src/providers/realdeal/` | realDeal provider implementations (9 files wiring UI to SDK contract clients). |
 | `frontend-demoland/` | Vite + React + Tailwind demoLand frontend with all pages (login, signup, dashboard, onboarding, policies, claims, EDU, pool, AI assistant). |
 | `ROADMAP.md` | Phased plan from concept to demo. |
 
@@ -140,13 +143,13 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 
 ## Status
 
-Scaffold + demoLand frontend (2026-07-06). Concept + architecture + tier model + EDU flow +
-DIDz credit score integration + pilot jurisdiction + partners + forensic recovery + gaming
-pilot + ecosystem coordination. demoLand frontend built (Vite + React + Tailwind, 9 pages,
-9 mock providers). Contract design stubs written for all 4 contracts (PremiumPool,
-PolicyRegistry, EduCertifier, ClaimEngine). No `.compact` files yet — design stubs will be
-validated via the Midnight MCP (skipZk) before any `.compact` is written. Private while the
-design matures.
+Contracts written + compile-validated (2026-07-06). All 4 Compact contracts (PremiumPool,
+PolicyRegistry, EduCertifier, ClaimEngine) written as `.compact` files and passed static
+analysis via the Midnight MCP (`midnight-compile-contract` skipZk mode). TypeScript SDK layer
+built (contract types, client classes, multi-tx orchestration). realDeal provider
+implementations written (9 files, throw until `@midnight-ntwrk/sdk` is installed).
+demoLand frontend fully functional (Vite + React + Tailwind, 9 pages, 9 mock providers).
+Next: local `compact compile` with full ZK keys, install SDK, wire realDeal providers.
 
 demoLand/realDeal: this repo follows the DIDzMonolith demoLand convention (amber
 `🎭 DEMO MODE` banner, 7-auth-method standard) for any web frontend.
