@@ -107,8 +107,9 @@ Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 | **SCIFz** | Nullifier + Merkle-membership + revocation + audit primitives for claims/anti-double-claim. |
 | **TrustedIssuerRegistry** (DIDz) | Approves CryptoSure-EDU certification issuers by domain + assurance tier. |
 | **EncryptVault** | Wallet-ownership proofs tied to the insured wallet. |
+| **ZKSplunk** | Observability cornerstone — monitors proof server, wallet, contracts; zkZap threat detection; tamper-evident on-chain attestation of claims telemetry. |
 
-See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md).
+See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATION.md`](docs/ECOSYSTEM_COORDINATION.md).
 
 ---
 
@@ -122,6 +123,12 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md).
 | `docs/CRYPTOSURE_EDU.md` | Certification curriculum, holder-signed activation, ZK verification. |
 | `docs/DIDZ_CREDIT_SCORE.md` | How the DIDz credit score sets premium + cap; DIDz/AgenticDID/RWAz integration. |
 | `docs/DIDzM_REUSE.md` | What we lift from the DIDz family first. |
+| `docs/PILOT_JURISDICTION.md` | PA + surrounding states regulatory analysis; WV sandbox + Vermont captive recommendation. |
+| `docs/PARTNERS_AND_LIQUIDITY.md` | LP strategy, partner categories, open call for forensic recovery partners. |
+| `docs/PARTNER_CONTACTS.md` | Contact directory: blockchain forensics firms, gaming asset insurers, LPs, brokers. |
+| `docs/FORENSIC_RECOVERY.md` | Crypto immutability/trackability as natural insurance fit; forensic recovery pipeline + case studies. |
+| `docs/GAMING_ASSET_INSURANCE.md` | Less-regulated pilot: insuring in-game digital assets against accidental loss. |
+| `docs/ECOSYSTEM_COORDINATION.md` | How DIDz + AgenticDID + RWAz + ZKSplunk form the cornerstone of CryptoSure opsec and forensics. |
 | `contracts/` | Compact contract design (pool, policy, EDU cert, claim). Design-only for now. |
 | `ROADMAP.md` | Phased plan from concept to demo. |
 

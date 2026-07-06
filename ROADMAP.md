@@ -5,7 +5,7 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 
 ---
 
-## Phase 0 — Design (current, 2026-07-06)
+## Phase 0 — Design (current, 2026-07-07)
 
 - [x] Concept + two-world model (everyday `.me` + crypto wallet `.app`)
 - [x] Architecture: premium pool, policy, underwriting, activation, claim, payout
@@ -13,6 +13,12 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 - [x] CryptoSure-EDU certification flow (holder-signed activation)
 - [x] DIDz credit score → premium + cap integration design
 - [x] DIDzM reuse map (Escrow/Treasury, TrustedIssuerRegistry, SCIFz, RWAz, AgenticDID)
+- [x] Pilot jurisdiction analysis (PA + surrounding states → WV sandbox + Vermont captive)
+- [x] Partners & liquidity providers strategy + open call for forensic recovery partners
+- [x] Partner contacts directory (forensics, gaming insurers, LPs, brokers)
+- [x] Forensic recovery pipeline design + crypto immutability thesis
+- [x] Gaming asset insurance pilot design (less-regulated entry point)
+- [x] Ecosystem coordination design (DIDz + AgenticDID + RWAz + ZKSplunk → CryptoSure opsec)
 - [ ] Honest coverage-scope doc: what wallet insurance IS and IS NOT responsible for
 
 ## Phase 1 — Core contracts (design → validated Compact)
@@ -43,8 +49,25 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 - [ ] AgenticDID: agent-managed policies under spend-capped grants
 - [ ] RWAz: everyday-coverage insured object = RWA registry entry
 - [ ] KYCz: regulated higher-assurance path for the largest tiers
+- [ ] ZKSplunk: register CryptoSure contracts as monitored DApp; wire SplunkForwarder
 
-## Phase 5 — demoLand / realDeal
+## Phase 5 — Forensic recovery & gaming pilot
+
+- [ ] Forensic partner integration: Chainalysis/TRM/Elliptic API for claim tracing
+- [ ] Forensic report → ZKSplunk attestation pipeline (hash + anchor investigation results)
+- [ ] Gaming asset insurance pilot (service-contract model, WV sandbox)
+- [ ] CRYPTOSURE-GAMING-EDU issuer set (game publishers/platform operators)
+- [ ] RWAz gaming asset entries (NFTs, game items, virtual real estate)
+
+## Phase 6 — Partner outreach & regulatory filing
+
+- [ ] P0 outreach: Relm Insurance (co-development), Jorgensen & Co. (gaming asset tech layer)
+- [ ] P1 outreach: Newfront (broker + Evertas intro), Chainalysis (Partner Program)
+- [ ] P2 outreach: TRM Labs, Elliptic, Evertas (via Newfront)
+- [ ] WV insurance sandbox application (or Vermont captive filing)
+- [ ] LP onboarding: first institutional capacity provider signed
+
+## Phase 7 — demoLand / realDeal
 
 - [ ] demoLand frontend (amber DEMO MODE banner, 7-auth standard, simulated pool/claims)
 - [ ] realDeal: local Midnight stack → pre-prod (skip preview per house convention)
