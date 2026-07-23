@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { AlertCircle, Plus, Loader2, CheckCircle2, XCircle, Clock } from 'lucide-react';
-import { useProviders } from '../providers/context';
-import { formatCurrency, formatDate } from '../lib/utils';
-import type { Claim, Policy, ClaimEvent } from '../providers/types';
+import { useProviders } from '@/providers/context';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import type { Claim, Policy, ClaimEvent } from '@/providers/types';
 
 const EVENTS: ClaimEvent[] = [
   'theft_covered_vector',

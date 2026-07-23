@@ -2,9 +2,18 @@
 
 > **Finding the best U.S. state to beta-test CryptoSure's privacy-preserving insurance model.**
 
+> **July 20, 2026 update:** This document preserves the original jurisdiction research,
+> but its West Virginia recommendation is superseded. West Virginia Code §33-60-2
+> accepted sandbox applications only on or before December 31, 2025. No current extension
+> has been identified. CryptoSure's active recommendation is a Pennsylvania-first,
+> carrier-backed path using Keystone Smart Launch for preliminary regulatory review.
+> See the [Keystone Smart Launch source record](../ref-docs/PA_KEYSTONE_SMART_LAUNCH.md)
+> and `PA_BUSINESS_AND_UNDERWRITER_PLAN.md`. A Vermont captive may be evaluated later
+> after the program has carrier support, credible loss data, capital, and governance.
+
 ---
 
-## Executive Summary
+## Original Executive Summary, retained for project history
 
 After researching insurance regulations in Pennsylvania and all surrounding states
 (DE, NJ, NY, OH, WV, MD), plus national leaders in insurtech-friendly regulation,

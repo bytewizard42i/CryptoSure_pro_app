@@ -1,6 +1,5 @@
 import type {
-  IPolicyProvider, Policy, BuyPolicyParams, TierCode, PolicyWorld,
-  TIER_COVERAGE as _TC,
+  IPolicyProvider, Policy, BuyPolicyParams,
 } from '../types';
 import { TIER_COVERAGE, TIER_EDU_REQUIRED } from '../types';
 

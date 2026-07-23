@@ -1,9 +1,9 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { Mail, Key, Wallet, Fingerprint, Chrome, Shield, Loader2, Check } from 'lucide-react';
-import { useAuth } from '../providers/context';
-import { DemoModeBanner } from '../components/DemoModeBanner';
-import type { SignUpMethod, SignUpData } from '../providers/types';
+import { useAuth } from '@/providers/context';
+import { DemoModeBanner } from '@/components/DemoModeBanner';
+import type { SignUpMethod, SignUpData } from '@/providers/types';
 
 const AUTH_METHODS: { id: SignUpMethod; label: string; icon: typeof Mail; badge?: string }[] = [
   { id: 'email', label: 'Email + Password', icon: Mail, badge: 'Quick' },
@@ -44,8 +44,8 @@ export function SignupPage() {
     try {
       await signup(data);
       navigate('/');
-    } catch (e: any) {
-      setError(e.message || 'Signup failed');
+    } catch (error: unknown) {
+      setError(error instanceof Error ? error.message : 'Signup failed');
     } finally {
       setLoading(false);
     }

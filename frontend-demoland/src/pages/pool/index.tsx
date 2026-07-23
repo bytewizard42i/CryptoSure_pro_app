@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { Coins, TrendingUp, TrendingDown, Activity } from 'lucide-react';
-import { useProviders } from '../providers/context';
-import { formatCurrency, formatDate } from '../lib/utils';
-import type { PoolStats, PoolEvent } from '../providers/types';
+import { useProviders } from '@/providers/context';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import type { PoolStats, PoolEvent } from '@/providers/types';
 
 export function PoolPage() {
   const providers = useProviders();

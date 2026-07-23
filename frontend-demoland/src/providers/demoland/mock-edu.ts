@@ -1,4 +1,4 @@
-import type { IEduProvider, EduCert, EduModule, EduModuleInfo, TierCode } from '../types';
+import type { IEduProvider, EduCert, EduModule, EduModuleInfo } from '../types';
 
 function delay(ms: number): Promise<void> {
   return new Promise((resolve) => setTimeout(resolve, ms));

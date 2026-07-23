@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import {
-  Shield, FileText, AlertCircle, GraduationCap, Coins, TrendingUp,
+  Shield, FileText, AlertCircle, Coins, TrendingUp,
   CheckCircle2, Clock, XCircle,
 } from 'lucide-react';
-import { useProviders, useAuth } from '../providers/context';
-import { formatCurrency, formatDate } from '../lib/utils';
-import type { Policy, Claim, PoolStats, CreditScoreInfo } from '../providers/types';
+import { useProviders, useAuth } from '@/providers/context';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import type { Policy, Claim, PoolStats, CreditScoreInfo } from '@/providers/types';
 
 export function Dashboard() {
   const providers = useProviders();

@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Shield, Wallet, GraduationCap, Bot, Loader2, Check } from 'lucide-react';
-import { useProviders, useAuth } from '../providers/context';
+import { useProviders, useAuth } from '@/providers/context';
 
 const STEPS = ['Identity', 'Coverage', 'EDU', 'Agent', 'Review'] as const;
 
@@ -14,12 +14,12 @@ export function OnboardingPage() {
   const [world, setWorld] = useState<'wallet' | 'everyday' | 'gaming'>('wallet');
   const [tier, setTier] = useState<'T0' | 'T1' | 'T2' | 'T3'>('T1');
   const [agentCap, setAgentCap] = useState(1000);
-  const [didzReg, setDidzReg] = useState(false);
+  const isDidzRegistered = Boolean(session?.didzCommitment);
 
   const handleFinish = async () => {
     setLoading(true);
     try {
-      if (!didzReg) await providers.didz.registerIdentity();
+      if (!isDidzRegistered) await providers.didz.registerIdentity();
       await providers.policies.buyPolicy({ world, tier, scopeHash: '0xscope_demo_v1' });
       if (agentCap > 0) await providers.agenticDID.createGrant('demo-agent', agentCap, agentCap * 5);
       navigate('/');
@@ -155,7 +155,7 @@ export function OnboardingPage() {
               <p><span className="text-slate-500">Coverage limit:</span> <span className="font-medium">${{ T0: 500, T1: 1000, T2: 5000, T3: 10000 }[tier]}</span></p>
               <p><span className="text-slate-500">EDU required:</span> <span className="font-medium">{tier === 'T2' || tier === 'T3' ? 'Yes' : 'No'}</span></p>
               <p><span className="text-slate-500">Agent cap:</span> <span className="font-medium">{agentCap > 0 ? `$${agentCap}/action` : 'None'}</span></p>
-              <p><span className="text-slate-500">DIDz:</span> <span className="font-medium">{didzReg ? 'Registered' : 'Will register'}</span></p>
+              <p><span className="text-slate-500">DIDz:</span> <span className="font-medium">{isDidzRegistered ? 'Registered' : 'Will register'}</span></p>
             </div>
             <button onClick={handleFinish} disabled={loading}
               className="w-full flex items-center justify-center gap-2 rounded-lg bg-violet-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-violet-700 disabled:opacity-50">

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { FileText, Plus, Loader2 } from 'lucide-react';
-import { useProviders } from '../providers/context';
-import { formatCurrency, formatDate } from '../lib/utils';
-import type { Policy } from '../providers/types';
+import { useProviders } from '@/providers/context';
+import { formatCurrency, formatDate } from '@/lib/utils';
+import type { Policy } from '@/providers/types';
 
 export function PoliciesPage() {
   const providers = useProviders();

@@ -6,6 +6,8 @@ node_modules/
 # Build output
 dist/
 build/
+!frontend-landing/build/
+!frontend-landing/build/sites-vite-plugin.ts
 .next/
 out/
 

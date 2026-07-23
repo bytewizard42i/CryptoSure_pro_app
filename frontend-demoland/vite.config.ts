@@ -3,9 +3,13 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from "@tailwindcss/vite"
 
-export default defineConfig(({ mode }) => ({
+export default defineConfig(({ command }) => ({
   define: {
-    'process.env.NODE_ENV': JSON.stringify(mode === 'production' ? 'production' : 'development'),
+    // Custom Vite modes such as "demoland" and "realdeal" are still
+    // production builds when the build command is running. Keying this value
+    // to the command prevents React's larger development runtime from being
+    // bundled into either deployable environment.
+    'process.env.NODE_ENV': JSON.stringify(command === 'build' ? 'production' : 'development'),
     'process.env': {},
     global: 'globalThis',
   },

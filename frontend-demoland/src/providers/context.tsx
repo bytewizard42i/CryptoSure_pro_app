@@ -1,5 +1,11 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { Providers, CSMode, AuthSession, SignUpData } from './types';
+import type {
+  Providers,
+  CSMode,
+  AuthSession,
+  SignUpData,
+  SignUpMethod,
+} from './types';
 import { createDemoProviders } from './demoland';
 import { createRealProviders } from './realdeal';
 
@@ -18,7 +24,7 @@ export function useProviders(): Providers {
 interface AuthContextValue {
   session: AuthSession | null;
   isAuthenticated: boolean;
-  login: (method: AuthSession['authMethod'], email?: string, password?: string) => Promise<void>;
+  login: (method: SignUpMethod, email?: string, password?: string) => Promise<void>;
   signup: (data: SignUpData) => Promise<void>;
   logout: () => Promise<void>;
 }
@@ -48,18 +54,29 @@ function createProviders(mode: CSMode): Providers {
   return createRealProviders();
 }
 
+function resolveConfiguredMode(configuredMode: string | undefined): CSMode {
+  if (configuredMode === 'realdeal') {
+    return 'realdeal';
+  }
+
+  // Missing, misspelled, or unexpected configuration always falls back to
+  // DemoLand. RealDeal may call approved external test services, so it must
+  // only be enabled by the exact reviewed configuration value.
+  return 'demoland';
+}
+
 interface ProvidersProviderProps {
   children: ReactNode;
 }
 
 export function ProvidersProvider({ children }: ProvidersProviderProps) {
-  const mode: CSMode = (import.meta.env.VITE_CS_MODE as CSMode) || 'demoland';
+  const mode = resolveConfiguredMode(import.meta.env.VITE_CS_MODE);
   const [providers] = useState(() => createProviders(mode));
   const [session, setSession] = useState<AuthSession | null>(null);
 
   const login = useCallback(
-    async (method: AuthSession['authMethod'], email?: string, password?: string) => {
-      const result = await providers.auth.login(method as any, email, password);
+    async (method: SignUpMethod, email?: string, password?: string) => {
+      const result = await providers.auth.login(method, email, password);
       setSession(result);
     },
     [providers],

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { GraduationCap, CheckCircle2, Circle, ShieldCheck } from 'lucide-react';
-import { useProviders } from '../providers/context';
-import { formatDate } from '../lib/utils';
-import type { EduCert, EduModuleInfo } from '../providers/types';
+import { useProviders } from '@/providers/context';
+import { formatDate } from '@/lib/utils';
+import type { EduCert, EduModuleInfo } from '@/providers/types';
 
 export function EduPage() {
   const providers = useProviders();

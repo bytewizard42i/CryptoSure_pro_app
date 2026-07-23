@@ -37,7 +37,7 @@ function writeStoredUsers(users: SignUpData[]): void {
 export class MockAuthProvider implements IAuthProvider {
   private session: AuthSession | null = null;
 
-  async login(method: SignUpMethod, email?: string, password?: string): Promise<AuthSession> {
+  async login(method: SignUpMethod, email?: string, _password?: string): Promise<AuthSession> {
     const delays: Record<string, number> = {
       email: 800, 'pgp-key': 1500, 'did-wallet': 1800, trezor: 2000,
       biometric: 1200, 'chrome-oauth': 1000, 'brave-oauth': 1000,

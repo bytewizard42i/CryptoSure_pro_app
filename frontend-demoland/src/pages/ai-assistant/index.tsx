@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { Bot, Send, Loader2, Sparkles } from 'lucide-react';
-import { useProviders } from '../providers/context';
-import type { ChatMessage } from '../providers/types';
+import { useProviders } from '@/providers/context';
+import type { ChatMessage } from '@/providers/types';
 
 export function AIAssistantPage() {
   const providers = useProviders();

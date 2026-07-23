@@ -123,7 +123,7 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 | `docs/CRYPTOSURE_EDU.md` | Certification curriculum, holder-signed activation, ZK verification. |
 | `docs/DIDZ_CREDIT_SCORE.md` | How the DIDz credit score sets premium + cap; DIDz/AgenticDID/RWAz integration. |
 | `docs/DIDzM_REUSE.md` | What we lift from the DIDz family first. |
-| `docs/PILOT_JURISDICTION.md` | PA + surrounding states regulatory analysis; WV sandbox + Vermont captive recommendation. |
+| `docs/PILOT_JURISDICTION.md` | Historical jurisdiction analysis, now superseded by the current Pennsylvania-first launch path. |
 | `docs/PARTNERS_AND_LIQUIDITY.md` | LP strategy, partner categories, open call for forensic recovery partners. |
 | `docs/PARTNER_CONTACTS.md` | Contact directory: blockchain forensics firms, gaming asset insurers, LPs, brokers. |
 | `docs/FORENSIC_RECOVERY.md` | Crypto immutability/trackability as natural insurance fit; forensic recovery pipeline + case studies. |
@@ -134,10 +134,20 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 | `docs/AI_INTEGRATION.md` | Phased AI plan: rule-based pre-screening → LLM recommendations → conversational assistant → AI underwriting. |
 | `docs/CONTRACTS_OVERVIEW.md` | Quick reference for all 4 contracts: circuits, types, privacy model, ecosystem integration. |
 | `docs/COVERAGE_SCOPE.md` | The actual policy scope text (v1.0.0). Hashed as scopeHash in every policy. 4 covered events, 10 exclusions, 6 conditions. |
+| `docs/LAUNCH_UNDERWRITING_AND_REGULATION.md` | Launch deep dive for the $500, $1k, $5k, and $10k tiers: pricing hypothesis, underwriting partners, regulation, recovery economics, and rollout plan. |
+| `docs/PA_BUSINESS_AND_UNDERWRITER_PLAN.md` | Current PA legal, licensing, underwriter-attraction, team, credential, and 90-day execution plan for EnterpriseZK Labs LLC. |
+| `docs/PLAIN_ENGLISH_INSURANCE_ROLES.md` | Layman-friendly definitions of carrier-backed insurance, underwriters, producers, brokers, Managing General Agents (MGAs), reinsurers, claims administrators, and forensic partners. |
+| `docs/PA_PRODUCER_EXAM_STUDY_GUIDE.md` | Beginner-friendly prerequisites, study plan, exam snapshot, and post-exam licensing sequence. |
+| `docs/WEBSITE_DEMOLAND_SPEC.md` | Public-site audience, content, interaction, compliance boundary, and launch specification. |
+| `docs/PRODUCT_IDEAS_BACKLOG.md` | Prioritized product concepts across the initial pilot, distribution, recovery, and longer-term platform. |
+| `docs/BUILD_LOG.md` | Build checkpoints, responsive typography baselines, browser text-size preferences, and validation notes. |
+| `ref-docs/` | Indexed third-party sources of truth, including Pennsylvania Keystone Smart Launch. |
 | `contracts/` | Compact smart contracts (PremiumPool, PolicyRegistry, EduCertifier, ClaimEngine). Written + compile-validated. |
+| `frontend-landing/` | CryptoSure.me public DemoLand landing page with customer and insurance-provider paths. |
 | `frontend-demoland/src/sdk/` | TypeScript SDK: contract types, client classes, multi-tx orchestration helpers. |
 | `frontend-demoland/src/providers/realdeal/` | realDeal provider implementations (9 files wiring UI to SDK contract clients). |
 | `frontend-demoland/` | Vite + React + Tailwind demoLand frontend with all pages (login, signup, dashboard, onboarding, policies, claims, EDU, pool, AI assistant). |
+| `frontend-landing/` | Public CryptoSure.me landing site with separate customer and provider paths. CryptoSure.app remains the future policy application. |
 | `ROADMAP.md` | Phased plan from concept to demo. |
 
 ---

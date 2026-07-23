@@ -5,6 +5,27 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 
 ---
 
+## July 20, 2026 launch correction
+
+The original pilot research below is preserved as project history, but its West Virginia
+sandbox recommendation is no longer actionable for a new application. The controlling
+statute accepted applications only on or before December 31, 2025. The current launch
+path is Pennsylvania-first:
+
+1. Keep EnterpriseZK Labs LLC as the technology and program-development company.
+2. Register the CryptoSure fictitious name and maintain Pennsylvania corporate filings.
+3. Request a confidential preliminary review through Pennsylvania
+   [Keystone Smart Launch](ref-docs/PA_KEYSTONE_SMART_LAUNCH.md).
+4. Obtain regulatory counsel's written role classification before real quoting or sales.
+5. Pursue a carrier-backed producer/program structure, using surplus lines if appropriate.
+   In plain English, a licensed insurer issues the policy and stands behind valid covered
+   claims while CryptoSure supplies the specialized product and operating technology.
+6. Prove $500 and $1,000 limits before unlocking $5,000 and $10,000.
+
+See `docs/PA_BUSINESS_AND_UNDERWRITER_PLAN.md` for the current legal and commercial
+sequence and `docs/PLAIN_ENGLISH_INSURANCE_ROLES.md` for definitions. A captive remains
+a possible later-stage risk-financing tool, not a shortcut for the initial launch.
+
 ## Phase 0 — Design (mostly complete, 2026-07-06)
 
 - [x] Concept + two-world model (everyday `.me` + crypto wallet `.app`)
@@ -80,8 +101,37 @@ the Midnight MCP (skipZk) before it is written to a `.compact` file, then compil
 - [ ] P0 outreach: Relm Insurance (co-development), Jorgensen & Co. (gaming asset tech layer)
 - [ ] P1 outreach: Newfront (broker + Evertas intro), Chainalysis (Partner Program)
 - [ ] P2 outreach: TRM Labs, Elliptic, Evertas (via Newfront)
-- [ ] WV insurance sandbox application (or Vermont captive filing)
+- [x] Re-check WV insurance sandbox deadline: closed to new statutory applications after December 31, 2025
+- [ ] Submit Pennsylvania
+  [Keystone Smart Launch](ref-docs/PA_KEYSTONE_SMART_LAUNCH.md) preliminary-review request
+- [ ] Obtain Pennsylvania insurance counsel role-classification memorandum
+- [ ] Confirm EnterpriseZK Labs LLC annual report, fictitious name, and licensed-entity structure
+- [ ] Choose the first designated responsible producer candidate and begin Pennsylvania
+  Property and Casualty (P&C) licensing
+- [ ] Complete the approved Pennsylvania pre-license course and the Property and Casualty
+  producer examination using `docs/PA_PRODUCER_EXAM_STUDY_GUIDE.md`
+- [ ] Retain an ACAS or FCAS actuary for the four-tier pricing memorandum
+- [ ] Engage a specialty program or wholesale broker
+- [ ] Build the carrier data room, sample bordereaux, claims workflow, and security-control package
+- [ ] Determine admitted filing versus surplus-lines path with the carrier and counsel
+- [ ] Treat Vermont captive or another retained-risk structure as a later evidence-based option
 - [ ] LP onboarding: first institutional capacity provider signed
+
+## Phase 6.5 — CryptoSure.me public DemoLand
+
+- [x] Create the separate `frontend-landing/` public-site project
+- [x] Add the fixed cinematic background and responsive dark visual system
+- [x] Add split calls to action: customer and insurance provider
+- [x] Add the $500, $1,000, $5,000, and $10,000 interactive tier explorer
+- [x] Add provider-role explorer for underwriting, capacity, distribution, and recovery
+- [x] Add FAQ, launch disclosures, keyboard focus, and reduced-motion behavior
+- [x] Keep interest capture local-only and visibly simulated
+- [x] Add Open Graph, favicon, and social-card assets
+- [ ] Complete regulatory-counsel review of all insurance and recovery claims
+- [ ] Add production privacy policy and terms after the actual data flow is chosen
+- [ ] Connect a consented waitlist only after legal review
+- [ ] Complete accessibility, cross-browser, and performance audits
+- [ ] Deploy CryptoSure.me after John authorizes publication
 
 ## Phase 7 — demoLand / realDeal
 
