@@ -1,3 +1,5 @@
+![CryptoSure promotional image](media/CryptoSure-ad-1.png)
+
 # CryptoSure 👉
 
 > **Insurance you can prove, priced by who you are — without revealing who you are.**
