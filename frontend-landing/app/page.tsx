@@ -1,3 +1,5 @@
+import Image from "next/image";
+
 import {
   CoverageTierExplorer,
   DemoInterestForm,
@@ -149,21 +151,38 @@ export default function Home() {
         <div className="hero-copy">
           <div className="eyebrow reveal-item">
             <span className="status-dot" />
-            Privacy-first insurance protocol
+            CryptoSure.me · Privacy-first insurance concept
           </div>
 
           <h1 className="reveal-item reveal-delay-1">
-            Where crypto protection is{" "}
-            <span>a Sure thing.</span>
+            Private inputs.
+            <span>Verifiable outcomes.</span>
           </h1>
 
           <p className="hero-description reveal-item reveal-delay-2">
-            Insurance rails for crypto wallets and digital assets, designed for
-            people, businesses, and the underwriters who protect them.
+            Explore a proposed insurance experience for crypto wallets and
+            digital assets, designed to make scope, exclusions, and evidence
+            clearer while revealing the minimum necessary information.
           </p>
 
+          <div className="hero-actions reveal-item reveal-delay-2">
+            <a className="hero-action-primary" href="#choose-your-path">
+              Explore proposed protection <ArrowIcon />
+            </a>
+            {productApplicationUrl && (
+              <a
+                className="hero-action-secondary"
+                href={productApplicationUrl}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Open DemoLand <ArrowIcon />
+              </a>
+            )}
+          </div>
+
           <ul
-            className="user-first-guardrails reveal-item reveal-delay-2"
+            className="user-first-guardrails reveal-item reveal-delay-3"
             aria-label="CryptoSure exploration safeguards"
           >
             <li>
@@ -182,113 +201,119 @@ export default function Home() {
               <small>Share only the fact an authorized decision requires.</small>
             </li>
           </ul>
-
-          <div
-            className="path-chooser reveal-item reveal-delay-3"
-            id="choose-your-path"
-            aria-label="Choose your CryptoSure path"
-          >
-            <section
-              className="path-button path-button-primary"
-              aria-labelledby="customer-protection-path"
-            >
-              <span className="path-card-topline">
-                <span className="path-index">01</span>
-                <span>For people and businesses</span>
-              </span>
-              <span className="path-message">
-                <span className="path-intent">“I want”</span>
-                <strong
-                  className="path-product-title"
-                  id="customer-protection-path"
-                >
-                  Crypto insurance
-                </strong>
-              </span>
-              <span className="path-arrow" aria-hidden="true">
-                <ArrowIcon />
-              </span>
-              <nav
-                className="path-category-list"
-                aria-label="Choose who needs crypto protection"
-              >
-                <a className="path-category-link" href="#customers">
-                  <span className="path-category-number">01</span>
-                  <span>
-                    <strong>Personal</strong>
-                    <small>For me or my family</small>
-                  </span>
-                  <ArrowIcon />
-                </a>
-                <a className="path-category-link" href="#customers">
-                  <span className="path-category-number">02</span>
-                  <span>
-                    <strong>Business</strong>
-                    <small>For my business&apos;s crypto assets</small>
-                  </span>
-                  <ArrowIcon />
-                </a>
-                <a className="path-category-link" href="#customers">
-                  <span className="path-category-number">03</span>
-                  <span>
-                    <strong>Crypto business</strong>
-                    <small>For my customers&apos; crypto assets</small>
-                  </span>
-                  <ArrowIcon />
-                </a>
-              </nav>
-            </section>
-            <a className="path-button path-button-secondary" href="#providers">
-              <span className="path-card-topline">
-                <span className="path-index">02</span>
-                <span>For protection partners</span>
-              </span>
-              <span className="path-message">
-                <span className="path-intent">“I want”</span>
-                <strong>To provide insurance</strong>
-              </span>
-              <span className="path-arrow">
-                <ArrowIcon />
-              </span>
-            </a>
-          </div>
-
-          {productApplicationUrl && (
-            <aside className="product-preview-bridge reveal-item reveal-delay-3">
-              <div className="product-preview-status" aria-hidden="true">
-                <span />
-              </div>
-              <div>
-                <span className="product-preview-label">Product preview</span>
-                <p>
-                  Explore the full simulated journey with mock providers and no
-                  external effects.
-                </p>
-              </div>
-              <a
-                href={productApplicationUrl}
-                target="_blank"
-                rel="noreferrer"
-                aria-label="Open the CryptoSure DemoLand product application"
-              >
-                Open DemoLand <ArrowIcon />
-              </a>
-            </aside>
-          )}
         </div>
 
-        <div className="hero-side-note reveal-item reveal-delay-3">
-          <span>Designed on Midnight</span>
+        <aside
+          className="hero-campaign reveal-item reveal-delay-2"
+          aria-label="CryptoSure campaign artwork"
+        >
+          <div className="campaign-frame">
+            <Image
+              src="/cryptosure-ad-3.png"
+              alt="CryptoSure campaign showing a person using a phone inside a luminous privacy shield"
+              width={1024}
+              height={1536}
+              priority
+              sizes="(max-width: 980px) 88vw, 34vw"
+            />
+          </div>
+          <div className="campaign-context">
+            <span>Campaign 03 · Concept experience</span>
+            <p>Coverage is not yet available.</p>
+          </div>
+        </aside>
+
+        <a
+          className="scroll-cue"
+          href="#choose-your-path"
+          aria-label="Scroll to choose your CryptoSure path"
+        >
+          <span>Choose your path</span>
+          <span className="scroll-line" />
+        </a>
+      </section>
+
+      <section
+        className="decision-section content-section"
+        id="choose-your-path"
+        aria-labelledby="choose-your-path-heading"
+      >
+        <div className="decision-heading">
+          <div>
+            <div className="section-kicker">Start with your goal</div>
+            <h2 id="choose-your-path-heading">What brought you to CryptoSure?</h2>
+          </div>
           <p>
-            Verify what matters through zero-knowledge proofs, while personal
-            details and full asset histories stay private.
+            Explore the protection concept anonymously, or see how underwriting,
+            capital, distribution, and recovery partners could help build it.
           </p>
         </div>
 
-        <a className="scroll-cue" href="#principles" aria-label="Scroll to learn more">
-          <span>Scroll to discover</span>
-          <span className="scroll-line" />
-        </a>
+        <div className="path-chooser" aria-label="Choose your CryptoSure path">
+          <section
+            className="path-button path-button-primary"
+            aria-labelledby="customer-protection-path"
+          >
+            <span className="path-card-topline">
+              <span className="path-index">01</span>
+              <span>For people and businesses</span>
+            </span>
+            <span className="path-message">
+              <span className="path-intent">“I want”</span>
+              <strong
+                className="path-product-title"
+                id="customer-protection-path"
+              >
+                Crypto insurance
+              </strong>
+            </span>
+            <span className="path-arrow" aria-hidden="true">
+              <ArrowIcon />
+            </span>
+            <nav
+              className="path-category-list"
+              aria-label="Choose who needs crypto protection"
+            >
+              <a className="path-category-link" href="#customers">
+                <span className="path-category-number">01</span>
+                <span>
+                  <strong>Personal</strong>
+                  <small>For me or my family</small>
+                </span>
+                <ArrowIcon />
+              </a>
+              <a className="path-category-link" href="#customers">
+                <span className="path-category-number">02</span>
+                <span>
+                  <strong>Business</strong>
+                  <small>For my business&apos;s crypto assets</small>
+                </span>
+                <ArrowIcon />
+              </a>
+              <a className="path-category-link" href="#customers">
+                <span className="path-category-number">03</span>
+                <span>
+                  <strong>Crypto business</strong>
+                  <small>For my customers&apos; crypto assets</small>
+                </span>
+                <ArrowIcon />
+              </a>
+            </nav>
+          </section>
+          <a className="path-button path-button-secondary" href="#providers">
+            <span className="path-card-topline">
+              <span className="path-index">02</span>
+              <span>For protection partners</span>
+            </span>
+            <span className="path-message">
+              <span className="path-intent">“I want”</span>
+              <strong>To provide insurance</strong>
+            </span>
+            <span className="path-arrow">
+              <ArrowIcon />
+            </span>
+          </a>
+        </div>
       </section>
 
       <section className="principles content-section" id="principles">

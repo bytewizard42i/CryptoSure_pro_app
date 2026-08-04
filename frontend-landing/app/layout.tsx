@@ -24,11 +24,11 @@ export const metadata: Metadata = {
     template: "%s | CryptoSure",
   },
   description:
-    "CryptoSure is a privacy-first insurance protocol for crypto wallets and digital assets, built for customers, businesses, and underwriting partners.",
+    "CryptoSure is developing a privacy-first insurance experience for crypto wallets, digital assets, and the partners who protect them.",
   openGraph: {
     title: "CryptoSure | Where crypto protection is a Sure thing",
     description:
-      "A privacy-first insurance protocol for crypto wallets, digital assets, and the partners who protect them.",
+      "Explore a privacy-first insurance concept for crypto wallets, digital assets, and the partners who protect them.",
     url: "https://cryptosure.me",
     siteName: "CryptoSure",
     type: "website",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CryptoSure | Where crypto protection is a Sure thing",
     description:
-      "Privacy-first insurance rails for crypto wallets, digital assets, and underwriting partners.",
+      "Explore a privacy-first insurance concept for crypto wallets, digital assets, and underwriting partners.",
     images: ["/og.png"],
   },
   icons: {
