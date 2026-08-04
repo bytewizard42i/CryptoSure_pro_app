@@ -103,16 +103,15 @@ export default function Home() {
       </a>
       <DemoLandBanner />
       <div className="background-media" aria-hidden="true">
-        <video
-          autoPlay
-          loop
-          muted
-          playsInline
-          preload="metadata"
-          poster="/protocol-field-poster.jpg"
-        >
-          <source src="/protocol-field.webm" type="video/webm" />
-        </video>
+        <Image
+          className="background-ad-image"
+          src="/cryptosure-pro-ad-2.png"
+          alt=""
+          width={1122}
+          height={1402}
+          priority
+          sizes="(max-width: 640px) 100vw, 58vw"
+        />
         <div className="background-wash" />
         <div className="background-grid" />
       </div>
@@ -202,26 +201,6 @@ export default function Home() {
             </li>
           </ul>
         </div>
-
-        <aside
-          className="hero-campaign reveal-item reveal-delay-2"
-          aria-label="CryptoSure campaign artwork"
-        >
-          <div className="campaign-frame">
-            <Image
-              src="/cryptosure-ad-3.png"
-              alt="CryptoSure campaign showing a person using a phone inside a luminous privacy shield"
-              width={1024}
-              height={1536}
-              priority
-              sizes="(max-width: 980px) 88vw, 34vw"
-            />
-          </div>
-          <div className="campaign-context">
-            <span>Campaign 03 · Concept experience</span>
-            <p>Coverage is not yet available.</p>
-          </div>
-        </aside>
 
         <a
           className="scroll-cue"

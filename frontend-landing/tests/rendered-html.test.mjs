@@ -63,6 +63,12 @@ test("server-renders the CryptoSure DemoLand experience", async () => {
     "the accessible hero text must not collapse to 'isa Sure thing'",
   );
   assert.doesNotMatch(html, /Your site is taking shape/);
+  assert.doesNotMatch(
+    html,
+    /CryptoSure\.me/i,
+    "the retired .me domain must not return to the public page",
+  );
+  assert.match(html, /cryptosure-pro-ad-2\.png/);
 });
 
 test("renders the four proposed starting limits", async () => {

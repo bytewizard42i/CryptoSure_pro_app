@@ -7,7 +7,7 @@ preferences that should survive across CryptoSure work sessions.
 
 ### Canonical project location
 
-- Work from `/home/js/DIDzMonolith/CryptoSure-me-app`.
+- Work from `/home/js/DIDzMonolith/CryptoSure-pro-app`.
 - The former Windows-side shell folder was intentionally removed.
 - Do not recreate a second CryptoSure checkout under `C:\Users\js\Documents`.
 

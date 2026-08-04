@@ -84,21 +84,26 @@ main {
   z-index: 0;
 }
 
-.background-media video {
+.background-ad-image {
   height: 100%;
-  inset: 0;
   object-fit: cover;
-  opacity: 0.38;
+  object-position: center;
   position: absolute;
-  width: 100%;
+  right: 0;
+  top: 0;
+  width: auto;
+  max-width: none;
+  filter: saturate(0.92) contrast(1.04);
+  -webkit-mask-image: linear-gradient(to right, transparent 0%, black 18%, black 100%);
+  mask-image: linear-gradient(to right, transparent 0%, black 18%, black 100%);
 }
 
 .background-wash {
   background:
-    radial-gradient(circle at 78% 30%, rgba(100, 168, 255, 0.16), transparent 34%),
-    radial-gradient(circle at 18% 38%, rgba(118, 247, 213, 0.08), transparent 30%),
-    linear-gradient(90deg, rgba(2, 9, 13, 0.92) 0%, rgba(2, 9, 13, 0.72) 48%, rgba(2, 9, 13, 0.48) 100%),
-    linear-gradient(180deg, rgba(2, 10, 14, 0.28) 0%, rgba(2, 9, 13, 0.58) 64%, #02090d 100%);
+    radial-gradient(circle at 80% 40%, rgba(100, 168, 255, 0.11), transparent 30%),
+    radial-gradient(circle at 22% 38%, rgba(118, 247, 213, 0.09), transparent 28%),
+    linear-gradient(90deg, #02090d 0%, rgba(2, 9, 13, 0.98) 38%, rgba(2, 9, 13, 0.7) 64%, rgba(2, 9, 13, 0.18) 100%),
+    linear-gradient(180deg, rgba(2, 10, 14, 0.16) 0%, rgba(2, 9, 13, 0.28) 62%, #02090d 100%);
   inset: 0;
   position: absolute;
 }
@@ -237,8 +242,8 @@ main {
 .hero {
   align-items: center;
   display: grid;
-  gap: clamp(2.5rem, 5vw, 6rem);
-  grid-template-columns: minmax(0, 1.08fr) minmax(22rem, 0.62fr);
+  gap: clamp(2rem, 4vw, 5rem);
+  grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.72fr);
   min-height: 100svh;
   padding: clamp(10.25rem, 18vh, 12.5rem) var(--page-padding) clamp(3.5rem, 7vh, 5.5rem);
   position: relative;
@@ -247,7 +252,7 @@ main {
 
 .hero-copy {
   align-self: center;
-  max-width: 56rem;
+  max-width: 59rem;
 }
 
 .eyebrow,
@@ -273,12 +278,12 @@ main {
 }
 
 .hero h1 {
-  font-size: clamp(3.9rem, 7.25vw, 8.3rem);
+  font-size: clamp(4.5rem, 8vw, 9.6rem);
   font-weight: 450;
   letter-spacing: -0.078em;
   line-height: 0.88;
   margin: clamp(2rem, 4vh, 3.8rem) 0 0;
-  max-width: 9.5ch;
+  max-width: 8.8ch;
 }
 
 .hero h1 span {
@@ -388,69 +393,6 @@ main {
   color: rgba(226, 246, 240, 0.52);
   font-size: 0.64rem;
   line-height: 1.45;
-}
-
-.hero-campaign {
-  align-self: center;
-  justify-self: end;
-  max-width: 31rem;
-  position: relative;
-  width: 100%;
-}
-
-.campaign-frame {
-  background: linear-gradient(145deg, rgba(163, 255, 232, 0.22), rgba(100, 168, 255, 0.08));
-  border: 1px solid rgba(163, 255, 232, 0.34);
-  border-radius: clamp(1.2rem, 2vw, 1.9rem);
-  box-shadow:
-    0 2.5rem 7rem rgba(0, 0, 0, 0.52),
-    0 0 5rem rgba(73, 189, 216, 0.12),
-    inset 0 1px 0 rgba(255, 255, 255, 0.12);
-  isolation: isolate;
-  overflow: hidden;
-  padding: 0.48rem;
-  position: relative;
-  transform: rotate(0.45deg);
-}
-
-.campaign-frame::after {
-  background: linear-gradient(130deg, rgba(255, 255, 255, 0.18), transparent 24%, transparent 72%, rgba(118, 247, 213, 0.12));
-  border-radius: inherit;
-  content: "";
-  inset: 0;
-  pointer-events: none;
-  position: absolute;
-  z-index: 1;
-}
-
-.campaign-frame img {
-  border-radius: calc(clamp(1.2rem, 2vw, 1.9rem) - 0.38rem);
-  display: block;
-  height: auto;
-  width: 100%;
-}
-
-.campaign-context {
-  align-items: center;
-  display: flex;
-  gap: 1rem;
-  justify-content: space-between;
-  margin-top: 1rem;
-  padding: 0 0.35rem;
-}
-
-.campaign-context span {
-  color: var(--teal-bright);
-  font-family: var(--font-geist-mono), monospace;
-  font-size: 0.56rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-}
-
-.campaign-context p {
-  color: rgba(226, 246, 240, 0.48);
-  font-size: 0.63rem;
-  margin: 0;
 }
 
 .path-chooser {
@@ -1412,18 +1354,23 @@ footer > p {
     display: none;
   }
 
+  .background-ad-image {
+    opacity: 0.78;
+    width: 68vw;
+  }
+
+  .background-wash {
+    background:
+      linear-gradient(90deg, #02090d 0%, rgba(2, 9, 13, 0.96) 54%, rgba(2, 9, 13, 0.4) 100%),
+      linear-gradient(180deg, rgba(2, 9, 13, 0.22), #02090d 100%);
+  }
+
   .hero {
     grid-template-columns: 1fr;
   }
 
   .hero-copy {
-    max-width: 60rem;
-  }
-
-  .hero-campaign {
-    justify-self: center;
-    margin-top: 2rem;
-    max-width: 31rem;
+    max-width: 52rem;
   }
 
   .decision-heading {
@@ -1499,6 +1446,21 @@ footer > p {
     --page-padding: 1.15rem;
   }
 
+  .background-ad-image {
+    height: 100%;
+    object-position: 58% center;
+    opacity: 0.48;
+    width: 100%;
+    -webkit-mask-image: none;
+    mask-image: none;
+  }
+
+  .background-wash {
+    background:
+      linear-gradient(180deg, rgba(2, 9, 13, 0.65) 0%, rgba(2, 9, 13, 0.88) 48%, #02090d 100%),
+      linear-gradient(90deg, rgba(2, 9, 13, 0.72), rgba(2, 9, 13, 0.38));
+  }
+
   .site-header {
     height: 4.6rem;
   }
@@ -1521,13 +1483,13 @@ footer > p {
   }
 
   .hero {
-    min-height: auto;
-    padding-bottom: 5rem;
+    min-height: 100svh;
+    padding-bottom: 4.5rem;
     padding-top: 9rem;
   }
 
   .hero h1 {
-    font-size: clamp(3.3rem, 16.2vw, 5.2rem);
+    font-size: clamp(3.55rem, 17vw, 5.7rem);
     line-height: 0.9;
   }
 
@@ -1542,18 +1504,6 @@ footer > p {
 
   .hero-actions a {
     width: 100%;
-  }
-
-  .hero-campaign {
-    margin-top: 2.5rem;
-    max-width: 25rem;
-    width: min(100%, 25rem);
-  }
-
-  .campaign-context {
-    align-items: flex-start;
-    flex-direction: column;
-    gap: 0.35rem;
   }
 
   .path-chooser {
@@ -2377,10 +2327,6 @@ footer > p {
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
-  }
-
-  .background-media video {
-    display: none;
   }
 
   .background-media {
