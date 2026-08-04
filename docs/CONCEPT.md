@@ -15,7 +15,7 @@ the disclosure to **zero-knowledge proofs of exactly the facts that matter**.
 
 CryptoSure covers **two worlds** from one engine:
 
-- **`CryptoSure.me` — everyday insurance.** The ordinary things people insure in the
+- **`CryptoSure.pro` — everyday insurance.** The ordinary things people insure in the
   physical world. Phones, laptops, cameras, bikes, e-bikes, musical instruments, tools,
   small jewelry, rental/deposit protection, ticketed-event protection, and similar
   everyday risks. The insured object can be an **RWAz registry entry** (a real-world asset

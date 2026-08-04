@@ -30,7 +30,7 @@ test("declares the Cloudflare-compatible public security perimeter", async () =>
   const nextConfiguration = await readProjectFile("next.config.ts");
 
   assert.match(nextConfiguration, /Content-Security-Policy/);
-  assert.match(nextConfiguration, /https:\/\/api\.cryptosure\.me/);
+  assert.match(nextConfiguration, /https:\/\/api\.cryptosure\.pro/);
   assert.match(nextConfiguration, /https:\/\/challenges\.cloudflare\.com/);
   assert.match(nextConfiguration, /frame-ancestors 'none'/);
   assert.match(nextConfiguration, /X-Content-Type-Options/);

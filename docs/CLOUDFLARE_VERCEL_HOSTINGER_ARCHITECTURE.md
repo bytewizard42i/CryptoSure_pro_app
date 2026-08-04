@@ -10,11 +10,11 @@ interface, and one private service plane:
 
 - Cloudflare is the authoritative Domain Name System, transport security, edge
   filtering, bot screening, cache-policy, and private-tunnel layer.
-- Vercel hosts the public CryptoSure.me website and, later, the shared
+- Vercel hosts the public CryptoSure.pro website and, later, the shared
   CryptoSure product application.
 - Hostinger runs long-lived Docker services, approved test integrations,
   background jobs, and private application programming interfaces.
-- CryptoSure.me remains the public marketing and discovery surface.
+- CryptoSure.pro remains the public marketing and discovery surface.
 - The product application keeps one set of routes and components for DemoLand
   and RealDeal.
 
@@ -26,11 +26,11 @@ explicit.
 
 | Hostname | Owner | Purpose | Public state |
 |---|---|---|---|
-| `cryptosure.me` | Vercel through Cloudflare | Marketing, education, and DemoLand research | Public |
-| `www.cryptosure.me` | Cloudflare redirect | Canonical redirect to the apex domain | Public |
-| `app.cryptosure.me` or `cryptosure.app` | Vercel through Cloudflare | Shared product application | Future |
-| `api.cryptosure.me` | Cloudflare Tunnel to Hostinger | Narrow public application programming interface | Future |
-| `ops.cryptosure.me` | Cloudflare Access to Hostinger | Operator-only health and administration | Private |
+| `cryptosure.pro` | Vercel through Cloudflare | Marketing, education, and DemoLand research | Public |
+| `www.cryptosure.pro` | Cloudflare redirect | Canonical redirect to the apex domain | Public |
+| `cryptosure.app` | Vercel through Cloudflare | Shared product application | Future |
+| `api.cryptosure.pro` | Cloudflare Tunnel to Hostinger | Narrow public application programming interface | Future |
+| `ops.cryptosure.pro` | Cloudflare Access to Hostinger | Operator-only health and administration | Private |
 
 Vercel must verify each custom domain before Cloudflare proxying is enabled.
 After proxying is enabled, transport security, redirects, cache behavior, and
@@ -45,7 +45,7 @@ Visitor
   -> Vercel website or product application
 
 Product application
-  -> https://api.cryptosure.me
+  -> https://api.cryptosure.pro
   -> Cloudflare Tunnel
   -> private Hostinger Docker network
   -> approved CryptoSure service adapter
@@ -149,7 +149,7 @@ needs an explicit non-authoritative purpose and reconciliation design.
 ## Repository layout
 
 ```text
-frontend-landing/          CryptoSure.me marketing site
+frontend-landing/          CryptoSure.pro marketing site
 frontend-demoland/         One product user interface (UI), DemoLand and RealDeal providers
 docs/                      Architecture and launch controls
 infra/cloudflare/          Cloudflare configuration runbook
@@ -211,7 +211,7 @@ plane configuration.
 This architecture document does not claim that:
 
 - CryptoSure offers, sells, binds, issues, or guarantees insurance;
-- CryptoSure.me or the product application is deployed;
+- CryptoSure.pro or the product application is deployed;
 - Cloudflare is authoritative for the domain;
 - the Hostinger gateway exists;
 - any RealDeal provider is connected;

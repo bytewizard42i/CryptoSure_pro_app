@@ -151,7 +151,7 @@ export default function Home() {
         <div className="hero-copy">
           <div className="eyebrow reveal-item">
             <span className="status-dot" />
-            CryptoSure.me · Privacy-first insurance concept
+            CryptoSure.pro · Privacy-first insurance concept
           </div>
 
           <h1 className="reveal-item reveal-delay-1">
@@ -361,7 +361,7 @@ export default function Home() {
             <h2>Your assets move differently. Your protection should too.</h2>
           </div>
           <p>
-            CryptoSure.app will be the dedicated policy experience. CryptoSure.me
+            CryptoSure.app will be the dedicated policy experience. CryptoSure.pro
             is where customers, businesses, and partners discover the protocol and
             join the launch journey.
           </p>
@@ -523,11 +523,11 @@ export default function Home() {
           </details>
           <details>
             <summary>
-              <span>What is the difference between CryptoSure.me and CryptoSure.app?</span>
+              <span>What is the difference between CryptoSure.pro and CryptoSure.app?</span>
               <span aria-hidden="true">+</span>
             </summary>
             <p>
-              CryptoSure.me is the public discovery, education, and partnership site.
+              CryptoSure.pro is the public discovery, education, and partnership site.
               CryptoSure.app is reserved for the future authenticated policy experience,
               including enrollment, monitoring, policies, claims, education, and account
               management.
@@ -564,7 +564,7 @@ export default function Home() {
         </div>
         <div className="footer-bottom">
           <span>© 2026 EnterpriseZK Labs</span>
-          <span>CryptoSure.me · Future policy app: CryptoSure.app</span>
+          <span>CryptoSure.pro · Future policy app: CryptoSure.app</span>
         </div>
       </footer>
     </main>

@@ -3,7 +3,7 @@ import type { NextConfig } from "next";
 const contentSecurityPolicy = [
   "default-src 'self'",
   "base-uri 'self'",
-  "connect-src 'self' https://api.cryptosure.me https://challenges.cloudflare.com",
+  "connect-src 'self' https://api.cryptosure.pro https://challenges.cloudflare.com",
   "font-src 'self' data:",
   "form-action 'self'",
   "frame-ancestors 'none'",

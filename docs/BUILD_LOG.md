@@ -24,7 +24,7 @@ preferences that should survive across CryptoSure work sessions.
 - Browser interface text and website content text are separate. Do not change
   CryptoSure typography merely to compensate for a browser-bookmark setting.
 
-### CryptoSure.me responsive typography baseline
+### CryptoSure.pro responsive typography baseline
 
 The following values were measured in the freshly built production site with
 headless Chrome 145 and reduced-motion mode enabled:

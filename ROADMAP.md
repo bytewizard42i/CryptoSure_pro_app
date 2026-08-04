@@ -117,7 +117,7 @@ a possible later-stage risk-financing tool, not a shortcut for the initial launc
 - [ ] Treat Vermont captive or another retained-risk structure as a later evidence-based option
 - [ ] LP onboarding: first institutional capacity provider signed
 
-## Phase 6.5 — CryptoSure.me public DemoLand
+## Phase 6.5 — CryptoSure.pro public DemoLand
 
 - [x] Create the separate `frontend-landing/` public-site project
 - [x] Add the fixed cinematic background and responsive dark visual system
@@ -131,7 +131,7 @@ a possible later-stage risk-financing tool, not a shortcut for the initial launc
 - [ ] Add production privacy policy and terms after the actual data flow is chosen
 - [ ] Connect a consented waitlist only after legal review
 - [ ] Complete accessibility, cross-browser, and performance audits
-- [ ] Deploy CryptoSure.me after John authorizes publication
+- [ ] Deploy CryptoSure.pro after John authorizes publication
 
 ## Phase 7 — demoLand / realDeal
 

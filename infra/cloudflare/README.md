@@ -6,15 +6,15 @@ interface (API) token, Tunnel token, Turnstile secret, or other credential.
 
 ## Current status
 
-No configuration in this directory proves that CryptoSure.me is delegated to
+No configuration in this directory proves that CryptoSure.pro is delegated to
 Cloudflare or that any Cloudflare service is active. Live state must be checked
 through the Cloudflare dashboard or API after John authorizes provisioning.
 
 ## Planned controls
 
-1. Authoritative Domain Name System for `cryptosure.me`.
+1. Authoritative Domain Name System for `cryptosure.pro`.
 2. Proxied website records targeting the verified Vercel project.
-3. A remotely managed Tunnel route for `api.cryptosure.me`.
+3. A remotely managed Tunnel route for `api.cryptosure.pro`.
 4. Cloudflare Access for operator-only hostnames.
 5. Managed web application firewall rules and narrow rate limits.
 6. Turnstile on public submissions and authentication entry points.

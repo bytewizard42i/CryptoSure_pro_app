@@ -18,7 +18,7 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://cryptosure.me"),
+  metadataBase: new URL("https://cryptosure.pro"),
   title: {
     default: "CryptoSure | Where crypto protection is a Sure thing",
     template: "%s | CryptoSure",
@@ -29,7 +29,7 @@ export const metadata: Metadata = {
     title: "CryptoSure | Where crypto protection is a Sure thing",
     description:
       "Explore a privacy-first insurance concept for crypto wallets, digital assets, and the partners who protect them.",
-    url: "https://cryptosure.me",
+    url: "https://cryptosure.pro",
     siteName: "CryptoSure",
     type: "website",
     images: [

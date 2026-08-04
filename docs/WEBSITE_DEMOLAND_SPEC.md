@@ -1,4 +1,4 @@
-# CryptoSure.me DemoLand Website Specification
+# CryptoSure.pro DemoLand Website Specification
 
 **Version:** 0.1
 **Date:** July 20, 2026
@@ -6,7 +6,7 @@
 
 ## Purpose
 
-CryptoSure.me is the public trust, education, and demand-validation site. It introduces crypto wallet and digital-asset protection to customers, businesses, underwriters, brokers, forensic partners, and capacity providers. The future CryptoSure.app will be the authenticated product application for eligibility, policy, evidence, claim, and partner workflows.
+CryptoSure.pro is the public trust, education, and demand-validation site. It introduces crypto wallet and digital-asset protection to customers, businesses, underwriters, brokers, forensic partners, and capacity providers. The future CryptoSure.app will be the authenticated product application for eligibility, policy, evidence, claim, and partner workflows.
 
 DemoLand is a simulation. It must never imply that EnterpriseZK Labs or CryptoSure currently offers, sells, binds, issues, or guarantees insurance.
 
@@ -70,7 +70,7 @@ The path should separate four partner roles:
 
 ## Production boundary
 
-| CryptoSure.me | CryptoSure.app |
+| CryptoSure.pro | CryptoSure.app |
 |---|---|
 | Public education and brand | Authenticated insurance experience |
 | Coverage concepts and illustrative tiers | Carrier-approved quotes and eligibility |
@@ -104,7 +104,7 @@ Before the public site presents live insurance information, each content class n
 - No database, authentication, or customer-record storage in DemoLand.
 - No secrets embedded in client code.
 - Reduced-motion support, keyboard focus states, responsive layouts, and adequate contrast.
-- Open Graph and social-card metadata for CryptoSure.me.
+- Open Graph and social-card metadata for CryptoSure.pro.
 - Future analytics should be privacy-respecting and should not collect wallet addresses, policy evidence, seed phrases, or sensitive financial information.
 
 ## Recommended production analytics

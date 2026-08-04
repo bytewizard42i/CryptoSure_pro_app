@@ -1,10 +1,10 @@
-# CryptoSure.me DemoLand Landing Site
+# CryptoSure.pro DemoLand Landing Site
 
 The public pre-launch experience for CryptoSure, built as a clean, futuristic landing
 page for customers, businesses, underwriters, brokers, capacity providers, and forensic
 partners.
 
-**Public domain:** `CryptoSure.me`
+**Public domain:** `CryptoSure.pro`
 **Future authenticated application:** `CryptoSure.app`
 
 This project is intentionally a **DemoLand simulation**. It does not quote, sell, bind,

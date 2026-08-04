@@ -305,7 +305,7 @@ See `docs/FORENSIC_RECOVERY.md` for the full recovery pipeline.
 
 ---
 
-# Part B — Everyday Insurance (`CryptoSure.me`)
+# Part B — Everyday Insurance (`CryptoSure.pro`)
 
 ## B.1 Covered Events
 

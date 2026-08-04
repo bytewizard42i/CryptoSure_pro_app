@@ -1,7 +1,7 @@
 # Insurance Website User Experience Research
 
 **Date:** July 23, 2026
-**Purpose:** Inform the CryptoSure.me public website and the shared CryptoSure
+**Purpose:** Inform the CryptoSure.pro public website and the shared CryptoSure
 product application
 **Scope:** Representative major carriers, digital insurers, and comparison
 services. This is a pattern study, not a claim that every insurer was reviewed.
@@ -226,7 +226,7 @@ policies, claims, evidence, and status.
 ### Recommended first viewport
 
 ```text
-CryptoSure.me                                      Open DemoLand
+CryptoSure.pro                                     Open DemoLand
 
 Where crypto protection is a Sure thing.
 Plain explanation of the narrow problem.
@@ -321,7 +321,7 @@ Product preview: simulated journey, no external effects
 ## Recommended implementation order
 
 1. Add first-viewport privacy and decision guardrails.
-2. Add the safe, configurable doorway from CryptoSure.me to the shared product
+2. Add the safe, configurable doorway from CryptoSure.pro to the shared product
    application.
 3. Reframe the coverage explorer around risk events before illustrative price.
 4. Add a plain-language coverage and exclusion comparison.

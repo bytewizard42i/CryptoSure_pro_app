@@ -78,7 +78,7 @@ Failing a requirement that a claim depends on can void that claim (scope violati
 
 ---
 
-## Part B — Everyday insurance (`CryptoSure.me`)
+## Part B — Everyday insurance (`CryptoSure.pro`)
 
 ### B.1 What it covers
 

@@ -6,7 +6,7 @@
 
 [![Built on Midnight](https://img.shields.io/badge/Built_on-Midnight_Network-6C3FC5?style=for-the-badge)](https://midnight.network)
 [![Powered by DIDz](https://img.shields.io/badge/Powered_by-DIDz.io-3B82F6?style=for-the-badge)]()
-[![Domain](https://img.shields.io/badge/Domains-CryptoSure.me_·_CryptoSure.app-10B981?style=for-the-badge)]()
+[![Domain](https://img.shields.io/badge/Domains-CryptoSure.pro_·_CryptoSure.app-10B981?style=for-the-badge)]()
 
 Part of the **[DIDz ecosystem](https://github.com/bytewizard42i/DIDzMonolith)**.
 
@@ -17,7 +17,7 @@ Part of the **[DIDz ecosystem](https://github.com/bytewizard42i/DIDzMonolith)**.
 CryptoSure is a **privacy-preserving insurance protocol** on Midnight. It covers two
 worlds:
 
-1. **Everyday insurance** (`CryptoSure.me`) — the ordinary things people insure in the
+1. **Everyday insurance** (`CryptoSure.pro`) — the ordinary things people insure in the
    physical world: devices, gadgets, bikes, instruments, small valuables, event/ticket
    protection, rental deposits, and other everyday risks. Policies are underwritten with
    ZK proofs so the insurer learns *eligibility and risk class* without learning the
@@ -39,7 +39,7 @@ band without seeing the underlying signals or your identity.
 
 | Area | Domain | What it does |
 |------|--------|--------------|
-| **Everyday coverage** | `CryptoSure.me` | Policies for real-world items and risks, ZK-underwritten. |
+| **Everyday coverage** | `CryptoSure.pro` | Policies for real-world items and risks, ZK-underwritten. |
 | **Crypto wallet coverage** | `CryptoSure.app` | Tiered wallet insurance ($500 → $50k) against a defined loss set. |
 | **CryptoSure-EDU** | both | Wallet-hygiene certification. **Suggested** for low tiers, **required** (and signed by the wallet holder) to activate high tiers. |
 
@@ -145,11 +145,11 @@ See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATI
 | `docs/BUILD_LOG.md` | Build checkpoints, responsive typography baselines, browser text-size preferences, and validation notes. |
 | `ref-docs/` | Indexed third-party sources of truth, including Pennsylvania Keystone Smart Launch. |
 | `contracts/` | Compact smart contracts (PremiumPool, PolicyRegistry, EduCertifier, ClaimEngine). Written + compile-validated. |
-| `frontend-landing/` | CryptoSure.me public DemoLand landing page with customer and insurance-provider paths. |
+| `frontend-landing/` | CryptoSure.pro public DemoLand landing page with customer and insurance-provider paths. |
 | `frontend-demoland/src/sdk/` | TypeScript SDK: contract types, client classes, multi-tx orchestration helpers. |
 | `frontend-demoland/src/providers/realdeal/` | realDeal provider implementations (9 files wiring UI to SDK contract clients). |
 | `frontend-demoland/` | Vite + React + Tailwind demoLand frontend with all pages (login, signup, dashboard, onboarding, policies, claims, EDU, pool, AI assistant). |
-| `frontend-landing/` | Public CryptoSure.me landing site with separate customer and provider paths. CryptoSure.app remains the future policy application. |
+| `frontend-landing/` | Public CryptoSure.pro landing site with separate customer and provider paths. CryptoSure.app remains the future policy application. |
 | `ROADMAP.md` | Phased plan from concept to demo. |
 
 ---
