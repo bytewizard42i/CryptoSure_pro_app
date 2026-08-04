@@ -180,7 +180,7 @@ verifies the signature against the DIDz-registered owner key, not the agent's ke
 
 ### 3.1 The Insured Object
 
-For everyday `.me` coverage (tiers $500–$50k), the insured object is an **RWAz registry
+For everyday `.pro` coverage (tiers $500–$50k), the insured object is an **RWAz registry
 entry** — a real-world asset registered on Midnight with:
 
 - **Appraised-value band** (privacy-preserving — the raw value is never on-chain).

@@ -108,7 +108,7 @@ like `providers.policies.listPolicies()` — it never checks the mode.
 |-----------|----------|----------|
 | **DIDz.io** | Fake commitment string | `DIDzRegistry.compact` on Midnight; `prove_score_at_least` ZK circuit for underwriting |
 | **AgenticDID** | Mock grant with demo caps | AgenticDID scoped grants on-chain; `per_action_cap` + `cumulative_cap` enforced; score-scaled tier ceiling |
-| **RWAz** | Not yet wired | RWA registry entry as the insured object for everyday `.me` coverage; appraised-value band feeds the cap |
+| **RWAz** | Not yet wired | RWA registry entry as the insured object for everyday `.pro` coverage; appraised-value band feeds the cap |
 | **KYCz** | Not yet wired | Optional regulated higher-assurance path for T4–T5 tiers |
 | **SCIFz** | Not yet wired | Nullifier for anti-double-claim; Merkle membership for policy verification |
 | **ZKSplunk** | Not yet wired | Pool health monitoring; claim event attestation; tamper-evident telemetry |

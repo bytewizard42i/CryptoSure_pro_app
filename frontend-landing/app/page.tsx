@@ -121,7 +121,7 @@ export default function Home() {
         <a className="wordmark" href="#top" aria-label="CryptoSure home">
           <span className="wordmark-mark">C</span>
           <span>CryptoSure</span>
-          <span className="domain-tag">.me</span>
+          <span className="domain-tag">.pro</span>
         </a>
 
         <nav className="desktop-nav" aria-label="Main navigation">

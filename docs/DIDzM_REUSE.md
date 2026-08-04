@@ -20,7 +20,7 @@ designed) in the DIDz family. We compose, we don't reinvent. Sources verified ag
 | **DIDzRegistry** (`attest_to_did`, attestation slots, `assert_i_control`, selective proofs) | DIDz-io | EDU certs + credit-score attestations; holder control proofs. |
 | **DIDz credit / trust score** (oracle pattern) | DIDz-io `ORACLE_AND_API_INTEGRATION.md` §4 | Premium + coverage cap (see `DIDZ_CREDIT_SCORE.md`). |
 | **Scoped grants** (`per_action_cap`, `cumulative_cap`) | AgenticDID | Agent-managed policies; score-scaled delegated caps. |
-| **RWA registry entries** | RWAz | The insured object for everyday `.me` coverage; appraised-value band = cap input. |
+| **RWA registry entries** | RWAz | The insured object for everyday `.pro` coverage; appraised-value band = cap input. |
 | **Nullifier + Merkle membership + revocation + audit** | SCIFz | Anti-double-claim; claim uniqueness; audit trail. |
 | **OFAC-style denylist screening** (Merkle non-membership, versioned root) | CareToCoin `OFAC_SCREENING_DESIGN.md` | Block sanctioned wallets from buying/claiming. |
 | **Wallet-ownership proofs** | EncryptVault | Bind the insured wallet to the policyholder without revealing the address. |

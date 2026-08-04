@@ -64,7 +64,7 @@ A policy binds, as an on-chain commitment:
 policyId = persistentHash([
   pad(32, "cryptosure:policy:v1"),
   holderDidCommitment,     // from DIDz — never the identity
-  tierCode,                // 0..5 for $500..$50k, or an appraised-value band for .me
+  tierCode,                // 0..5 for $500..$50k, or an appraised-value band for .pro
   scopeHash,               // hash of the exact "what's covered" text vX the holder accepted
   eduCommit                // commitment to the EDU cert (0 if none / low tier)
 ])
@@ -84,7 +84,7 @@ credit-score band** (see `DIDZ_CREDIT_SCORE.md`) and enforces:
 2. **Premium band:** premium multiplier is chosen from the proven score band
    (e.g. band A = 0.6×, band B = 0.8×, band C = 1.0×, band D = 1.3×). The raw score never
    appears; only which band's threshold was met.
-3. **Risk class:** for `.me`, an RWAz-derived risk class (asset type/age) adjusts premium;
+3. **Risk class:** for `.pro`, an RWAz-derived risk class (asset type/age) adjusts premium;
    for `.app`, the tier + EDU status adjust it.
 
 Because Compact circuits are deterministic and the score is a witness, the score band is
@@ -144,7 +144,7 @@ orchestrator.
 | EDU issuer approval | TrustedIssuerRegistry (domain + assurance tier) | DIDz-io |
 | Cert attestation | `attest_to_did` / attestation slot | DIDz-io DIDzRegistry |
 | Anti-double-claim | Nullifier + Set membership + revocation | SCIFz |
-| Insured object (.me) | RWA registry entry | RWAz |
+| Insured object (.pro) | RWA registry entry | RWAz |
 | Agent-managed policy | Scoped grant, per-action + cumulative caps | AgenticDID |
 | Status lifecycle | State Machine (enum phases) | midnight-expert state patterns |
 

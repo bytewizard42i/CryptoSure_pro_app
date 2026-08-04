@@ -28,7 +28,7 @@ a possible later-stage risk-financing tool, not a shortcut for the initial launc
 
 ## Phase 0 — Design (mostly complete, 2026-07-06)
 
-- [x] Concept + two-world model (everyday `.me` + crypto wallet `.app`)
+- [x] Concept + two-world model (everyday `.pro` + crypto wallet `.app`)
 - [x] Architecture: premium pool, policy, underwriting, activation, claim, payout
 - [x] Tier model ($500 → $50k) + EDU gating rules
 - [x] CryptoSure-EDU certification flow (holder-signed activation)
