@@ -423,8 +423,8 @@ main {
   border-radius: clamp(1.15rem, 2vw, 1.7rem);
   display: grid;
   gap: clamp(1.25rem, 2.2vw, 2.2rem);
-  grid-template-columns: 1fr auto;
-  grid-template-rows: auto 1fr;
+  grid-template-columns: 1fr;
+  grid-template-rows: auto auto minmax(0, 1fr);
   min-height: clamp(22rem, 32vw, 27rem);
   overflow: hidden;
   padding: clamp(1.35rem, 2.5vw, 2.2rem);
@@ -507,7 +507,7 @@ main {
 }
 
 .path-message {
-  align-self: end;
+  align-self: start;
   display: grid;
   gap: 0.18rem;
   grid-column: 1;
@@ -531,7 +531,7 @@ main {
 
 .path-button .path-product-title {
   --neon-border-angle: 0deg;
-  animation: race-neon-border 2s linear infinite;
+  animation: race-neon-border var(--neon-race-duration, 2s) linear infinite;
   backdrop-filter: blur(10px);
   background:
     linear-gradient(rgba(2, 18, 15, 0.7), rgba(2, 18, 15, 0.7)) padding-box,
@@ -601,6 +601,7 @@ main {
 }
 
 .path-category-list {
+  align-self: end;
   display: grid;
   gap: 0.48rem;
   grid-column: 1 / -1;
@@ -686,6 +687,7 @@ main {
 }
 
 .path-button-secondary {
+  --neon-race-duration: 3.5s;
   backdrop-filter: blur(22px);
   background:
     linear-gradient(135deg, rgba(12, 38, 46, 0.46), rgba(5, 18, 26, 0.28));
@@ -871,7 +873,7 @@ footer {
 }
 
 .decision-heading .section-kicker {
-  animation: goal-text-streak 2s linear infinite;
+  animation: goal-text-streak 4s linear infinite;
   background: linear-gradient(
     110deg,
     var(--teal-bright) 0%,
