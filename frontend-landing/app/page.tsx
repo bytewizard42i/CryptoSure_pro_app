@@ -195,7 +195,7 @@ export default function Home() {
                 className="path-product-title"
                 id="customer-protection-path"
               >
-                Crypto insurance
+                Crypto Insurance
               </strong>
             </span>
             <nav
@@ -242,12 +242,12 @@ export default function Home() {
               <span>For insurers and protection partners</span>
             </span>
             <span className="path-message">
-              <span className="path-intent">“I want…”</span>
+              <span className="path-intent">“I{"\u00a0"}want…”</span>
               <strong
                 className="path-product-title"
                 id="provider-insurance-path"
               >
-                Provide crypto insurance or liquidity
+                To Provide Crypto Insurance or Liquidity
               </strong>
             </span>
             <nav
