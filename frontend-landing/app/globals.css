@@ -1,5 +1,11 @@
 @import "tailwindcss";
 
+@property --neon-border-angle {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
 :root {
   --ink: #ecfbf7;
   --ink-muted: rgba(226, 246, 240, 0.68);
@@ -505,12 +511,24 @@ main {
 }
 
 .path-button .path-product-title {
+  --neon-border-angle: 0deg;
+  animation: race-neon-border 1s linear infinite;
   backdrop-filter: blur(10px);
-  background: rgba(2, 18, 15, 0.64);
-  border: 1px solid rgba(223, 255, 114, 0.56);
+  background:
+    linear-gradient(rgba(2, 18, 15, 0.7), rgba(2, 18, 15, 0.7)) padding-box,
+    conic-gradient(
+      from var(--neon-border-angle),
+      rgba(223, 255, 114, 0.3) 0deg,
+      rgba(223, 255, 114, 0.3) 270deg,
+      #dfff72 300deg,
+      #ffffdc 320deg,
+      #dfff72 340deg,
+      rgba(223, 255, 114, 0.3) 360deg
+    ) border-box;
+  border: 2px solid transparent;
   border-radius: 0.48rem;
   box-shadow:
-    0 0 1.4rem rgba(205, 255, 87, 0.16),
+    0 0 1.6rem rgba(205, 255, 87, 0.3),
     inset 0 1px 0 rgba(255, 255, 255, 0.08);
   color: #dfff72;
   font-size: clamp(1.35rem, 2.25vw, 2.15rem);
@@ -1404,6 +1422,12 @@ footer > p {
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes race-neon-border {
+  to {
+    --neon-border-angle: 360deg;
   }
 }
 
@@ -2425,6 +2449,13 @@ footer > p {
   .scroll-cue,
   .orbit {
     animation: none;
+  }
+
+  .path-button .path-product-title {
+    animation: none;
+    background:
+      linear-gradient(rgba(2, 18, 15, 0.7), rgba(2, 18, 15, 0.7)) padding-box,
+      #dfff72 border-box;
   }
 
   *,

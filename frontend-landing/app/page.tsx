@@ -220,7 +220,7 @@ export default function Home() {
         <div className="decision-heading">
           <div>
             <div className="section-kicker">Start with your goal</div>
-            <h2 id="choose-your-path-heading">What brings you to CryptoSure?</h2>
+            <h2 id="choose-your-path-heading">“I want…” or “I want…”</h2>
           </div>
           <p>
             Explore the protection concept anonymously, or see how underwriting,
@@ -238,7 +238,7 @@ export default function Home() {
               <span>For people and businesses</span>
             </span>
             <span className="path-message">
-              <span className="path-intent">“I want”</span>
+              <span className="path-intent">“I want…”</span>
               <strong
                 className="path-product-title"
                 id="customer-protection-path"
@@ -288,7 +288,7 @@ export default function Home() {
               <span>For insurers and protection partners</span>
             </span>
             <span className="path-message">
-              <span className="path-intent">“I want”</span>
+              <span className="path-intent">“I want…”</span>
               <strong
                 className="path-product-title"
                 id="provider-insurance-path"
