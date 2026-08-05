@@ -5,8 +5,8 @@
   --ink-muted: rgba(226, 246, 240, 0.68);
   --line: rgba(204, 255, 240, 0.14);
   --line-strong: rgba(204, 255, 240, 0.26);
-  --surface: rgba(5, 18, 24, 0.72);
-  --surface-strong: #06131a;
+  --surface: rgba(5, 18, 24, 0.52);
+  --surface-strong: rgba(6, 19, 26, 0.82);
   --teal: #76f7d5;
   --teal-bright: #a3ffe8;
   --blue: #64a8ff;
@@ -102,8 +102,8 @@ main {
   background:
     radial-gradient(circle at 80% 40%, rgba(100, 168, 255, 0.11), transparent 30%),
     radial-gradient(circle at 22% 38%, rgba(118, 247, 213, 0.09), transparent 28%),
-    linear-gradient(90deg, #02090d 0%, rgba(2, 9, 13, 0.98) 38%, rgba(2, 9, 13, 0.7) 64%, rgba(2, 9, 13, 0.18) 100%),
-    linear-gradient(180deg, rgba(2, 10, 14, 0.16) 0%, rgba(2, 9, 13, 0.28) 62%, #02090d 100%);
+    linear-gradient(90deg, rgba(2, 9, 13, 0.86) 0%, rgba(2, 9, 13, 0.72) 38%, rgba(2, 9, 13, 0.4) 64%, rgba(2, 9, 13, 0.06) 100%),
+    linear-gradient(180deg, rgba(2, 10, 14, 0.08) 0%, rgba(2, 9, 13, 0.16) 62%, rgba(2, 9, 13, 0.68) 100%);
   inset: 0;
   position: absolute;
 }
@@ -121,8 +121,8 @@ main {
 
 .site-header {
   align-items: center;
-  backdrop-filter: blur(18px);
-  background: linear-gradient(to bottom, rgba(2, 11, 15, 0.7), rgba(2, 11, 15, 0.1));
+  backdrop-filter: blur(14px);
+  background: linear-gradient(to bottom, rgba(2, 11, 15, 0.46), rgba(2, 11, 15, 0.06));
   border-bottom: 1px solid rgba(207, 255, 242, 0.08);
   display: grid;
   grid-template-columns: 1fr auto 1fr;
@@ -347,14 +347,14 @@ main {
 
 .hero-action-secondary {
   backdrop-filter: blur(14px);
-  background: rgba(4, 20, 26, 0.56);
+  background: rgba(4, 20, 26, 0.34);
   border: 1px solid var(--line-strong);
   color: var(--teal-bright);
 }
 
 .hero-action-secondary:hover,
 .hero-action-secondary:focus-visible {
-  background: rgba(8, 34, 43, 0.72);
+  background: rgba(8, 34, 43, 0.48);
   border-color: rgba(118, 247, 213, 0.5);
 }
 
@@ -405,6 +405,7 @@ main {
 }
 
 .path-button {
+  backdrop-filter: blur(12px);
   isolation: isolate;
   align-items: stretch;
   border: 1px solid rgba(204, 255, 240, 0.22);
@@ -499,7 +500,8 @@ main {
 }
 
 .path-button .path-product-title {
-  background: rgba(2, 18, 15, 0.9);
+  backdrop-filter: blur(10px);
+  background: rgba(2, 18, 15, 0.64);
   border: 1px solid rgba(223, 255, 114, 0.56);
   border-radius: 0.48rem;
   box-shadow:
@@ -624,7 +626,7 @@ main {
 
 .path-button-primary {
   background:
-    linear-gradient(135deg, rgba(163, 255, 232, 0.98), rgba(118, 247, 213, 0.88) 48%, rgba(100, 168, 255, 0.8));
+    linear-gradient(135deg, rgba(163, 255, 232, 0.84), rgba(118, 247, 213, 0.74) 48%, rgba(100, 168, 255, 0.62));
   box-shadow: 0 1.5rem 4.5rem rgba(42, 230, 191, 0.12);
   color: #03110f;
 }
@@ -642,14 +644,14 @@ main {
 .path-button-secondary {
   backdrop-filter: blur(22px);
   background:
-    linear-gradient(135deg, rgba(12, 38, 46, 0.82), rgba(5, 18, 26, 0.6));
+    linear-gradient(135deg, rgba(12, 38, 46, 0.58), rgba(5, 18, 26, 0.36));
   box-shadow: 0 1.5rem 4.5rem rgba(0, 0, 0, 0.2);
 }
 
 .path-button-secondary:hover,
 .path-button-secondary:focus-visible {
   background:
-    linear-gradient(135deg, rgba(18, 56, 63, 0.9), rgba(8, 27, 36, 0.7));
+    linear-gradient(135deg, rgba(18, 56, 63, 0.7), rgba(8, 27, 36, 0.46));
   border-color: rgba(118, 247, 213, 0.58);
   box-shadow: 0 2rem 5rem rgba(31, 174, 170, 0.15);
 }
@@ -661,7 +663,7 @@ main {
 .product-preview-bridge {
   align-items: center;
   backdrop-filter: blur(16px);
-  background: rgba(3, 18, 23, 0.64);
+  background: rgba(3, 18, 23, 0.38);
   border: 1px solid rgba(118, 247, 213, 0.22);
   border-radius: 0.85rem;
   display: grid;
@@ -775,7 +777,8 @@ main {
 
 .content-section,
 footer {
-  background: rgba(2, 9, 13, 0.91);
+  backdrop-filter: blur(10px);
+  background: rgba(2, 9, 13, 0.58);
   padding-left: var(--page-padding);
   padding-right: var(--page-padding);
   position: relative;
@@ -898,7 +901,8 @@ footer {
 }
 
 .customer-section {
-  background: #e9f5f1;
+  backdrop-filter: blur(12px) saturate(0.9);
+  background: rgba(233, 245, 241, 0.78);
   color: #071b1a;
   padding-bottom: var(--section-gap);
   padding-top: var(--section-gap);
@@ -974,7 +978,8 @@ footer {
 
 .glass-panel {
   align-items: center;
-  background: #0b302d;
+  backdrop-filter: blur(14px);
+  background: rgba(11, 48, 45, 0.78);
   border-radius: 1rem;
   color: var(--ink);
   display: flex;
@@ -1161,7 +1166,7 @@ footer {
 }
 
 .protocol-section {
-  background: rgba(4, 16, 22, 0.96);
+  background: rgba(4, 16, 22, 0.68);
   border-top: 1px solid var(--line);
   padding-bottom: var(--section-gap);
   padding-top: var(--section-gap);
@@ -1203,7 +1208,8 @@ footer {
 
 .contact-section {
   align-items: center;
-  background: #72efd0;
+  backdrop-filter: blur(12px) saturate(0.9);
+  background: rgba(114, 239, 208, 0.78);
   color: #041411;
   display: flex;
   flex-direction: column;
@@ -1271,7 +1277,7 @@ footer {
 }
 
 footer {
-  background: #02090d;
+  background: rgba(2, 9, 13, 0.76);
   display: grid;
   gap: 3rem;
   grid-template-columns: 0.75fr 1fr 0.5fr;
@@ -1355,14 +1361,14 @@ footer > p {
   }
 
   .background-ad-image {
-    opacity: 0.78;
+    opacity: 0.88;
     width: 68vw;
   }
 
   .background-wash {
     background:
-      linear-gradient(90deg, #02090d 0%, rgba(2, 9, 13, 0.96) 54%, rgba(2, 9, 13, 0.4) 100%),
-      linear-gradient(180deg, rgba(2, 9, 13, 0.22), #02090d 100%);
+      linear-gradient(90deg, rgba(2, 9, 13, 0.88) 0%, rgba(2, 9, 13, 0.76) 54%, rgba(2, 9, 13, 0.24) 100%),
+      linear-gradient(180deg, rgba(2, 9, 13, 0.14), rgba(2, 9, 13, 0.72) 100%);
   }
 
   .hero {
@@ -1449,7 +1455,7 @@ footer > p {
   .background-ad-image {
     height: 100%;
     object-position: 58% center;
-    opacity: 0.48;
+    opacity: 0.62;
     width: 100%;
     -webkit-mask-image: none;
     mask-image: none;
@@ -1457,8 +1463,8 @@ footer > p {
 
   .background-wash {
     background:
-      linear-gradient(180deg, rgba(2, 9, 13, 0.65) 0%, rgba(2, 9, 13, 0.88) 48%, #02090d 100%),
-      linear-gradient(90deg, rgba(2, 9, 13, 0.72), rgba(2, 9, 13, 0.38));
+      linear-gradient(180deg, rgba(2, 9, 13, 0.54) 0%, rgba(2, 9, 13, 0.72) 48%, rgba(2, 9, 13, 0.84) 100%),
+      linear-gradient(90deg, rgba(2, 9, 13, 0.62), rgba(2, 9, 13, 0.26));
   }
 
   .site-header {
