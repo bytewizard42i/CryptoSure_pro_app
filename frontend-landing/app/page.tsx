@@ -163,12 +163,11 @@ export default function Home() {
       <section
         className="decision-section content-section"
         id="choose-your-path"
-        aria-labelledby="choose-your-path-heading"
+        aria-label="Choose your CryptoSure goal"
       >
         <div className="decision-heading">
           <div>
-            <div className="section-kicker">Start with your goal</div>
-            <h2 id="choose-your-path-heading">“I want…” or “I want…”</h2>
+            <div className="section-kicker">Let&apos;s start with your goal here...</div>
           </div>
           <p>
             Explore the protection concept anonymously, or see how underwriting,
@@ -181,6 +180,11 @@ export default function Home() {
             className="path-button path-button-primary"
             aria-labelledby="customer-protection-path"
           >
+            <a
+              className="path-card-link"
+              href="#customers"
+              aria-label="Explore crypto insurance"
+            />
             <span className="path-card-topline">
               <span className="path-index">01</span>
               <span>For people and businesses</span>
@@ -194,14 +198,11 @@ export default function Home() {
                 Crypto insurance
               </strong>
             </span>
-            <span className="path-arrow" aria-hidden="true">
-              <ArrowIcon />
-            </span>
             <nav
               className="path-category-list"
               aria-label="Choose who needs crypto protection"
             >
-              <a className="path-category-link" href="#customers">
+              <a className="path-category-link" href="#coverage-explorer">
                 <span className="path-category-number">01</span>
                 <span>
                   <strong>Personal</strong>
@@ -209,7 +210,7 @@ export default function Home() {
                 </span>
                 <ArrowIcon />
               </a>
-              <a className="path-category-link" href="#customers">
+              <a className="path-category-link" href="#demo-interest">
                 <span className="path-category-number">02</span>
                 <span>
                   <strong>Business</strong>
@@ -217,7 +218,7 @@ export default function Home() {
                 </span>
                 <ArrowIcon />
               </a>
-              <a className="path-category-link" href="#customers">
+              <a className="path-category-link" href="#partner-paths">
                 <span className="path-category-number">03</span>
                 <span>
                   <strong>Crypto business</strong>
@@ -231,6 +232,11 @@ export default function Home() {
             className="path-button path-button-secondary"
             aria-labelledby="provider-insurance-path"
           >
+            <a
+              className="path-card-link"
+              href="#providers"
+              aria-label="Explore providing crypto insurance or liquidity"
+            />
             <span className="path-card-topline">
               <span className="path-index">02</span>
               <span>For insurers and protection partners</span>
@@ -244,14 +250,14 @@ export default function Home() {
                 Provide crypto insurance or liquidity
               </strong>
             </span>
-            <span className="path-arrow" aria-hidden="true">
-              <ArrowIcon />
-            </span>
             <nav
               className="path-category-list"
               aria-label="Choose how to help provide crypto insurance or liquidity"
             >
-              <a className="path-category-link" href="#providers">
+              <a
+                className="path-category-link"
+                href="#partnership-tab-underwriter"
+              >
                 <span className="path-category-number">01</span>
                 <span>
                   <strong>Underwriting</strong>
@@ -259,7 +265,7 @@ export default function Home() {
                 </span>
                 <ArrowIcon />
               </a>
-              <a className="path-category-link" href="#providers">
+              <a className="path-category-link" href="#partnership-tab-capital">
                 <span className="path-category-number">02</span>
                 <span>
                   <strong>Liquidity providers</strong>
@@ -267,7 +273,10 @@ export default function Home() {
                 </span>
                 <ArrowIcon />
               </a>
-              <a className="path-category-link" href="#partner-paths">
+              <a
+                className="path-category-link"
+                href="#partnership-tab-distribution"
+              >
                 <span className="path-category-number">03</span>
                 <span>
                   <strong>Distribution &amp; recovery</strong>

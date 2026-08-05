@@ -256,7 +256,7 @@ main {
   gap: clamp(2rem, 4vw, 5rem);
   grid-template-columns: minmax(0, 1fr) minmax(22rem, 0.72fr);
   min-height: auto;
-  padding: clamp(10.25rem, 18vh, 12.5rem) var(--page-padding) clamp(2.25rem, 4vw, 4rem);
+  padding: clamp(10.25rem, 18vh, 12.5rem) var(--page-padding) clamp(1rem, 2vw, 2rem);
   position: relative;
   z-index: 1;
 }
@@ -475,6 +475,25 @@ main {
   text-transform: uppercase;
 }
 
+.path-card-link {
+  border-radius: inherit;
+  inset: 0;
+  position: absolute;
+  z-index: 1;
+}
+
+.path-card-link:focus-visible {
+  outline: 3px solid #dfff72;
+  outline-offset: -0.55rem;
+}
+
+.path-card-topline,
+.path-message {
+  pointer-events: none;
+  position: relative;
+  z-index: 2;
+}
+
 .path-index {
   align-items: center;
   border: 1px solid currentColor;
@@ -586,6 +605,8 @@ main {
   gap: 0.48rem;
   grid-column: 1 / -1;
   grid-row: 3;
+  position: relative;
+  z-index: 3;
 }
 
 .path-category-link {
@@ -838,7 +859,7 @@ footer {
 .decision-section {
   border-top: 0;
   padding-bottom: var(--section-gap);
-  padding-top: clamp(1.5rem, 3vw, 3rem);
+  padding-top: clamp(0.5rem, 1.5vw, 1.5rem);
   scroll-margin-top: 1rem;
 }
 
@@ -850,7 +871,25 @@ footer {
 }
 
 .decision-heading .section-kicker {
-  margin-bottom: 1.8rem;
+  animation: goal-text-streak 2s linear infinite;
+  background: linear-gradient(
+    110deg,
+    var(--teal-bright) 0%,
+    var(--teal-bright) 41%,
+    #dfff72 47%,
+    #ffffdc 50%,
+    #dfff72 53%,
+    var(--teal-bright) 59%,
+    var(--teal-bright) 100%
+  );
+  background-clip: text;
+  background-size: 250% 100%;
+  color: transparent;
+  font-size: clamp(1.05rem, 2vw, 1.75rem);
+  font-weight: 760;
+  letter-spacing: 0.02em;
+  margin-bottom: 0;
+  text-transform: none;
 }
 
 .decision-heading h2 {
@@ -869,7 +908,7 @@ footer {
 }
 
 .decision-section .path-chooser {
-  margin-top: clamp(3rem, 6vw, 5.5rem);
+  margin-top: clamp(1.25rem, 2.5vw, 2.5rem);
   max-width: none;
 }
 
@@ -1431,6 +1470,15 @@ footer > p {
   }
 }
 
+@keyframes goal-text-streak {
+  from {
+    background-position: 150% center;
+  }
+  to {
+    background-position: -75% center;
+  }
+}
+
 @keyframes reveal-up {
   from {
     opacity: 0;
@@ -1587,7 +1635,7 @@ footer > p {
 
   .hero {
     min-height: auto;
-    padding-bottom: 2.5rem;
+    padding-bottom: 1.25rem;
     padding-top: 9rem;
   }
 
@@ -2456,6 +2504,12 @@ footer > p {
     background:
       linear-gradient(rgba(2, 18, 15, 0.7), rgba(2, 18, 15, 0.7)) padding-box,
       #dfff72 border-box;
+  }
+
+  .decision-heading .section-kicker {
+    animation: none;
+    background: none;
+    color: #dfff72;
   }
 
   *,

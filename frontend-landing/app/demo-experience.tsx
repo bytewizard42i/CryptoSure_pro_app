@@ -1,6 +1,6 @@
 "use client";
 
-import { FormEvent, useMemo, useState } from "react";
+import { FormEvent, useEffect, useMemo, useState } from "react";
 
 type CoverageTier = {
   identifier: string;
@@ -189,7 +189,11 @@ export function CoverageTierExplorer() {
       : selectedCoverageTier.monthlyPrice;
 
   return (
-    <div className="tier-explorer" aria-labelledby="tier-explorer-heading">
+    <div
+      className="tier-explorer"
+      id="coverage-explorer"
+      aria-labelledby="tier-explorer-heading"
+    >
       <div className="risk-scenario-explorer">
         <div>
           <span className="panel-label">Start with your concern</span>
@@ -323,6 +327,30 @@ export function CoverageTierExplorer() {
 export function PartnershipExplorer() {
   const [selectedPartnershipIdentifier, setSelectedPartnershipIdentifier] =
     useState("underwriter");
+
+  useEffect(() => {
+    function selectPartnershipFromLocationHash() {
+      const requestedPartnershipIdentifier = window.location.hash.replace(
+        "#partnership-tab-",
+        "",
+      );
+      const requestedPartnershipExists = partnershipPaths.some(
+        (partnershipPath) =>
+          partnershipPath.identifier === requestedPartnershipIdentifier,
+      );
+
+      if (requestedPartnershipExists) {
+        setSelectedPartnershipIdentifier(requestedPartnershipIdentifier);
+      }
+    }
+
+    selectPartnershipFromLocationHash();
+    window.addEventListener("hashchange", selectPartnershipFromLocationHash);
+
+    return () => {
+      window.removeEventListener("hashchange", selectPartnershipFromLocationHash);
+    };
+  }, []);
 
   const selectedPartnership = useMemo(
     () =>
