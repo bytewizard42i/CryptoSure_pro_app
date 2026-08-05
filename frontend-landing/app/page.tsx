@@ -279,19 +279,56 @@ export default function Home() {
               </a>
             </nav>
           </section>
-          <a className="path-button path-button-secondary" href="#providers">
+          <section
+            className="path-button path-button-secondary"
+            aria-labelledby="provider-insurance-path"
+          >
             <span className="path-card-topline">
               <span className="path-index">02</span>
-              <span>For protection partners</span>
+              <span>For insurers and protection partners</span>
             </span>
             <span className="path-message">
               <span className="path-intent">“I want”</span>
-              <strong>To provide insurance</strong>
+              <strong
+                className="path-product-title"
+                id="provider-insurance-path"
+              >
+                Provide crypto insurance
+              </strong>
             </span>
-            <span className="path-arrow">
+            <span className="path-arrow" aria-hidden="true">
               <ArrowIcon />
             </span>
-          </a>
+            <nav
+              className="path-category-list"
+              aria-label="Choose how to help provide crypto insurance"
+            >
+              <a className="path-category-link" href="#providers">
+                <span className="path-category-number">01</span>
+                <span>
+                  <strong>Underwriting</strong>
+                  <small>Design terms, assess risk, or manage claims</small>
+                </span>
+                <ArrowIcon />
+              </a>
+              <a className="path-category-link" href="#providers">
+                <span className="path-category-number">02</span>
+                <span>
+                  <strong>Insurance capacity</strong>
+                  <small>Carrier, reinsurance, or reserve capital</small>
+                </span>
+                <ArrowIcon />
+              </a>
+              <a className="path-category-link" href="#partner-paths">
+                <span className="path-category-number">03</span>
+                <span>
+                  <strong>Distribution &amp; recovery</strong>
+                  <small>Wallet, platform, broker, or forensic partner</small>
+                </span>
+                <ArrowIcon />
+              </a>
+            </nav>
+          </section>
         </div>
       </section>
 

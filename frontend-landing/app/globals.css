@@ -665,6 +665,32 @@ main {
   background: rgba(118, 247, 213, 0.08);
 }
 
+.path-button-secondary .path-category-link {
+  background: rgba(118, 247, 213, 0.045);
+  border-color: rgba(204, 255, 240, 0.14);
+  color: var(--ink);
+}
+
+.path-button-secondary .path-category-link:hover,
+.path-button-secondary .path-category-link:focus-visible {
+  background: rgba(118, 247, 213, 0.12);
+  border-color: rgba(118, 247, 213, 0.42);
+}
+
+.path-button-secondary .path-category-number {
+  color: var(--teal);
+  opacity: 0.78;
+}
+
+.path-button-secondary .path-category-link strong {
+  color: rgba(244, 255, 252, 0.96);
+}
+
+.path-button-secondary .path-category-link small {
+  color: rgba(226, 246, 240, 0.68);
+  opacity: 1;
+}
+
 .product-preview-bridge {
   align-items: center;
   backdrop-filter: blur(16px);
