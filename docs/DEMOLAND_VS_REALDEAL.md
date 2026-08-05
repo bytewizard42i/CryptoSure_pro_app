@@ -46,6 +46,7 @@ like `providers.policies.listPolicies()` — it never checks the mode.
    │  MockDidzProvider              │  DIDzRegistry.compact
    │  MockAgenticDIDProvider        │  AgenticDID scoped grants
    │  MockAIAssistantProvider       │  LLM service (future)
+   │  MockInsuranceLabProvider      │  Approved insurance data adapter
    └──────────────────────────────  └─────────────────────────────
 ```
 
@@ -65,6 +66,8 @@ like `providers.policies.listPolicies()` — it never checks the mode.
 - **DIDz**: Returns a fake commitment string (`0xDEMO_didz_commitment_*`).
 - **AgenticDID**: Returns a mock grant with demo caps.
 - **AI**: Rule-based responses (keyword matching, no LLM).
+- **Insurance laboratory**: Deterministic fictional risk, policy, claim, and
+  reserve records with three reproducible stress scenarios. No insurer data.
 
 ### demoLand visual signals
 
@@ -93,6 +96,9 @@ like `providers.policies.listPolicies()` — it never checks the mode.
 - **AgenticDID**: Real scoped grants with `per_action_cap` and
   `cumulative_cap` enforced on-chain.
 - **AI**: LLM-powered (see `docs/AI_INTEGRATION.md`).
+- **Insurance laboratory**: External adapter seam that fails closed until
+  product-specific access, terms, credentials, field mappings, and evidence
+  classification are approved. No Lloyd's integration is currently connected.
 
 ### Network progression (house convention)
 
@@ -150,9 +156,9 @@ VITE_CS_MODE=realdeal npm run build   # production (requires @midnight-ntwrk/sdk
 
 ## Status
 
-- **demoLand**: Fully functional with mock data for all 9 providers
-- **realDeal**: 9 provider implementations written (auth, creditScore, policy,
-  claim, edu, pool, didz, agenticDID, ai). Each wraps an SDK contract client
+- **demoLand**: Fully functional with mock data for all 10 providers
+- **realDeal**: 10 provider implementations written (auth, creditScore, policy,
+  claim, edu, pool, didz, agenticDID, ai, insurance laboratory). Each wraps an SDK contract client
   and throws with a clear "SDK not connected" message until `@midnight-ntwrk/sdk`
   is installed. TypeScript SDK layer includes contract types, client classes,
   and multi-contract transaction orchestration helpers. See `ROADMAP.md` Phase 7.

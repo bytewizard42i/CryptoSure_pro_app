@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { ArrowRight, BookOpenCheck, FileSearch, ShieldCheck, SlidersHorizontal } from 'lucide-react';
+import { ArrowRight, BookOpenCheck, FileSearch, FlaskConical, ShieldCheck, SlidersHorizontal } from 'lucide-react';
 
 const journeySteps = [
   {
@@ -30,6 +30,13 @@ const journeySteps = [
     to: '/claims',
     icon: FileSearch,
   },
+  {
+    number: '05',
+    title: 'Stress the portfolio',
+    copy: 'Change a fictional loss scenario and inspect reserves, concentration, and evidence quality.',
+    to: '/lab',
+    icon: FlaskConical,
+  },
 ];
 
 export function GuidedJourney() {
@@ -49,7 +56,7 @@ export function GuidedJourney() {
         </p>
       </div>
 
-      <div className="relative z-10 mt-7 grid gap-3 md:grid-cols-2 xl:grid-cols-4">
+      <div className="relative z-10 mt-7 grid gap-3 md:grid-cols-2 xl:grid-cols-5">
         {journeySteps.map((step) => {
           const Icon = step.icon;
           return (

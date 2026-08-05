@@ -52,6 +52,11 @@ const PoolPage = lazy(() =>
     default: pageModule.PoolPage,
   })),
 );
+const InsuranceLabPage = lazy(() =>
+  import('./pages/lab').then((pageModule) => ({
+    default: pageModule.InsuranceLabPage,
+  })),
+);
 const AIAssistantPage = lazy(() =>
   import('./pages/ai-assistant').then((pageModule) => ({
     default: pageModule.AIAssistantPage,
@@ -91,6 +96,7 @@ function App() {
               <Route path="/claims" element={<ClaimsPage />} />
               <Route path="/edu" element={<EduPage />} />
               <Route path="/pool" element={<PoolPage />} />
+              <Route path="/lab" element={<InsuranceLabPage />} />
               <Route path="/ai-assistant" element={<AIAssistantPage />} />
             </Route>
             <Route path="*" element={<Navigate to="/" replace />} />

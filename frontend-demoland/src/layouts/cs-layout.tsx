@@ -1,7 +1,7 @@
 import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import {
   Shield, LayoutDashboard, FileText, AlertCircle, GraduationCap,
-  Coins, UserPlus, LogOut, Bot,
+  Coins, UserPlus, LogOut, Bot, FlaskConical,
 } from 'lucide-react';
 import { useAuth, useMode } from '../providers/context';
 import { DemoModeBanner } from '../components/DemoModeBanner';
@@ -13,6 +13,7 @@ const navItems = [
   { to: '/claims', label: 'Claims', icon: AlertCircle },
   { to: '/edu', label: 'EDU Certification', icon: GraduationCap },
   { to: '/pool', label: 'Premium Pool', icon: Coins },
+  { to: '/lab', label: 'Risk Laboratory', icon: FlaskConical },
   { to: '/ai-assistant', label: 'AI Assistant', icon: Bot },
 ];
 

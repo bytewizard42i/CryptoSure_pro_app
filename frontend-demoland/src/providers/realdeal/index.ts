@@ -9,6 +9,7 @@ import { createRealPoolProvider } from './pool';
 import { createRealDidzProvider } from './didz';
 import { createRealAgenticDIDProvider } from './agenticdid';
 import { createRealAIProvider } from './ai';
+import { createRealInsuranceLabProvider } from './insurance-lab';
 
 // =============================================================================
 // realDeal Provider Factory
@@ -28,6 +29,7 @@ import { createRealAIProvider } from './ai';
 //   didz:         DIDzRegistry.compact → register_did (non-transferable registry entry)
 //   agenticDID:   AgenticDIDRegistry.compact → create_delegation (scoped grants)
 //   ai:           AI service (see docs/AI_INTEGRATION.md) — Phase 1-3 roadmap
+//   insuranceLab: approved product-specific insurance data adapter, fail-closed
 //
 // Multi-contract transaction orchestration (SDK composes in one tx):
 //   buyPolicy:    PolicyRegistry.buy_policy + PremiumPool.deposit_premium
@@ -49,5 +51,6 @@ export function createRealProviders(mode?: 'local' | 'pre-prod'): Providers {
     didz: createRealDidzProvider(),
     agenticDID: createRealAgenticDIDProvider(),
     ai: createRealAIProvider(),
+    insuranceLab: createRealInsuranceLabProvider(),
   };
 }

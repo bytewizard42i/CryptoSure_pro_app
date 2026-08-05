@@ -1,0 +1,247 @@
+{
+  "metadata": {
+    "datasetId": "cryptosure-synthetic-insurance-lab-v1",
+    "version": "1.0.0",
+    "generatedAt": "2026-07-31T12:00:00.000Z",
+    "asOfDate": "2026-07-31",
+    "source": "CryptoSure-generated synthetic data",
+    "purpose": "Product design, provider-contract testing, and DemoLand experimentation only",
+    "containsRealPeople": false,
+    "containsRealPolicies": false,
+    "containsRealClaims": false,
+    "externalAffiliations": [],
+    "disclaimer": "Entirely fictional data created by CryptoSure. Not supplied, reviewed, or endorsed by Lloyd's or any insurer. Not actuarial advice and not suitable for pricing, reserving, compliance, or production decisions."
+  },
+  "riskSubmissions": [
+    {
+      "id": "risk-syn-001",
+      "applicantAlias": "Northstar Treasury Cooperative",
+      "world": "wallet",
+      "territory": "US-PA",
+      "requestedLimit": 250000,
+      "custodyModel": "multisignature self-custody",
+      "securityScoreBand": "A",
+      "evidenceCompleteness": 0.98,
+      "zeroKnowledgeProofState": "verified-demo-proof",
+      "riskSignals": ["hardware signing", "three-of-five quorum", "documented recovery drill"],
+      "decision": "illustrative-accept",
+      "annualPremiumIndication": 18000
+    },
+    {
+      "id": "risk-syn-002",
+      "applicantAlias": "Mosaic Custody Laboratory",
+      "world": "wallet",
+      "territory": "GB-LND",
+      "requestedLimit": 100000,
+      "custodyModel": "qualified-custodian simulation",
+      "securityScoreBand": "B",
+      "evidenceCompleteness": 0.91,
+      "zeroKnowledgeProofState": "verified-demo-proof",
+      "riskSignals": ["role separation", "withdrawal allowlist", "quarterly access review"],
+      "decision": "illustrative-accept-with-conditions",
+      "annualPremiumIndication": 9600
+    },
+    {
+      "id": "risk-syn-003",
+      "applicantAlias": "PixelForge Guild",
+      "world": "gaming",
+      "territory": "US-CA",
+      "requestedLimit": 500000,
+      "custodyModel": "contract-controlled guild treasury",
+      "securityScoreBand": "B",
+      "evidenceCompleteness": 0.94,
+      "zeroKnowledgeProofState": "verified-demo-proof",
+      "riskSignals": ["contract audit artifact", "asset inventory commitment", "incident runbook"],
+      "decision": "illustrative-accept-with-conditions",
+      "annualPremiumIndication": 42000
+    },
+    {
+      "id": "risk-syn-004",
+      "applicantAlias": "Harbor Key Studio",
+      "world": "everyday",
+      "territory": "US-NY",
+      "requestedLimit": 75000,
+      "custodyModel": "hardware wallet with social recovery",
+      "securityScoreBand": "A",
+      "evidenceCompleteness": 0.96,
+      "zeroKnowledgeProofState": "verified-demo-proof",
+      "riskSignals": ["seed separation", "recovery guardian quorum", "phishing training"],
+      "decision": "illustrative-accept",
+      "annualPremiumIndication": 7800
+    },
+    {
+      "id": "risk-syn-005",
+      "applicantAlias": "Juniper Protocol Workshop",
+      "world": "wallet",
+      "territory": "SG-01",
+      "requestedLimit": 300000,
+      "custodyModel": "multiparty computation simulation",
+      "securityScoreBand": "B",
+      "evidenceCompleteness": 0.88,
+      "zeroKnowledgeProofState": "verified-demo-proof",
+      "riskSignals": ["distributed key shares", "transaction policy engine", "recovery exercise pending"],
+      "decision": "illustrative-accept-with-conditions",
+      "annualPremiumIndication": 25200
+    },
+    {
+      "id": "risk-syn-006",
+      "applicantAlias": "Copperleaf Creator Collective",
+      "world": "gaming",
+      "territory": "CA-ON",
+      "requestedLimit": 150000,
+      "custodyModel": "single hot wallet",
+      "securityScoreBand": "D",
+      "evidenceCompleteness": 0.54,
+      "zeroKnowledgeProofState": "insufficient-demo-evidence",
+      "riskSignals": ["single signer", "no recovery drill", "incomplete asset inventory"],
+      "decision": "illustrative-refer",
+      "annualPremiumIndication": null
+    }
+  ],
+  "policies": [
+    {
+      "id": "policy-syn-001",
+      "riskSubmissionId": "risk-syn-001",
+      "world": "wallet",
+      "territory": "US-PA",
+      "coverageLimit": 250000,
+      "writtenPremium": 18000,
+      "earnedPremium": 12000,
+      "status": "active",
+      "inceptionDate": "2026-01-01",
+      "expiryDate": "2026-12-31"
+    },
+    {
+      "id": "policy-syn-002",
+      "riskSubmissionId": "risk-syn-002",
+      "world": "wallet",
+      "territory": "GB-LND",
+      "coverageLimit": 100000,
+      "writtenPremium": 9600,
+      "earnedPremium": 6800,
+      "status": "active",
+      "inceptionDate": "2026-02-01",
+      "expiryDate": "2027-01-31"
+    },
+    {
+      "id": "policy-syn-003",
+      "riskSubmissionId": "risk-syn-003",
+      "world": "gaming",
+      "territory": "US-CA",
+      "coverageLimit": 500000,
+      "writtenPremium": 42000,
+      "earnedPremium": 31500,
+      "status": "active",
+      "inceptionDate": "2025-11-01",
+      "expiryDate": "2026-10-31"
+    },
+    {
+      "id": "policy-syn-004",
+      "riskSubmissionId": "risk-syn-004",
+      "world": "everyday",
+      "territory": "US-NY",
+      "coverageLimit": 75000,
+      "writtenPremium": 7800,
+      "earnedPremium": 5850,
+      "status": "active",
+      "inceptionDate": "2025-12-01",
+      "expiryDate": "2026-11-30"
+    },
+    {
+      "id": "policy-syn-005",
+      "riskSubmissionId": "risk-syn-005",
+      "world": "wallet",
+      "territory": "SG-01",
+      "coverageLimit": 300000,
+      "writtenPremium": 25200,
+      "earnedPremium": 18900,
+      "status": "active",
+      "inceptionDate": "2025-12-15",
+      "expiryDate": "2026-12-14"
+    }
+  ],
+  "claims": [
+    {
+      "id": "claim-syn-001",
+      "policyId": "policy-syn-001",
+      "event": "theft_covered_vector",
+      "status": "paid",
+      "amountClaimed": 22000,
+      "incurredAmount": 18000,
+      "paidAmount": 18000,
+      "reserveAmount": 0,
+      "submittedAt": "2026-03-04T10:15:00.000Z",
+      "lastUpdatedAt": "2026-03-21T16:40:00.000Z",
+      "evidenceStage": "settled-after-demo-review"
+    },
+    {
+      "id": "claim-syn-002",
+      "policyId": "policy-syn-004",
+      "event": "device_loss",
+      "status": "approved",
+      "amountClaimed": 8500,
+      "incurredAmount": 7500,
+      "paidAmount": 0,
+      "reserveAmount": 7500,
+      "submittedAt": "2026-06-11T13:00:00.000Z",
+      "lastUpdatedAt": "2026-07-02T09:20:00.000Z",
+      "evidenceStage": "approved-awaiting-demo-settlement"
+    },
+    {
+      "id": "claim-syn-003",
+      "policyId": "policy-syn-003",
+      "event": "gaming_asset_theft",
+      "status": "under_review",
+      "amountClaimed": 20000,
+      "incurredAmount": 16000,
+      "paidAmount": 0,
+      "reserveAmount": 16000,
+      "submittedAt": "2026-07-19T18:25:00.000Z",
+      "lastUpdatedAt": "2026-07-30T15:10:00.000Z",
+      "evidenceStage": "synthetic-forensic-review"
+    },
+    {
+      "id": "claim-syn-004",
+      "policyId": "policy-syn-002",
+      "event": "custodial_failure",
+      "status": "denied",
+      "amountClaimed": 12000,
+      "incurredAmount": 0,
+      "paidAmount": 0,
+      "reserveAmount": 0,
+      "submittedAt": "2026-05-08T08:45:00.000Z",
+      "lastUpdatedAt": "2026-05-28T14:30:00.000Z",
+      "evidenceStage": "outside-illustrative-scope"
+    }
+  ],
+  "reserveSnapshots": [
+    {
+      "asOfDate": "2026-04-30",
+      "availableCapital": 1195000,
+      "openClaimReserve": 18000,
+      "activeExposure": 1225000,
+      "capitalToActiveExposureRatio": 0.98
+    },
+    {
+      "asOfDate": "2026-05-31",
+      "availableCapital": 1218000,
+      "openClaimReserve": 12000,
+      "activeExposure": 1225000,
+      "capitalToActiveExposureRatio": 0.99
+    },
+    {
+      "asOfDate": "2026-06-30",
+      "availableCapital": 1236000,
+      "openClaimReserve": 19500,
+      "activeExposure": 1225000,
+      "capitalToActiveExposureRatio": 1.01
+    },
+    {
+      "asOfDate": "2026-07-31",
+      "availableCapital": 1250000,
+      "openClaimReserve": 23500,
+      "activeExposure": 1225000,
+      "capitalToActiveExposureRatio": 1.02
+    }
+  ]
+}

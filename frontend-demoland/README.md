@@ -27,10 +27,18 @@ its evidence is simulated, local, sandbox, test-network, or production.
 - `src/providers/demoland/` implements the contracts with placeholders and mocks.
 - `src/providers/realdeal/` implements the same contracts with approved external
   test services and infrastructure.
+- `src/fixtures/cryptosure-insurance-lab.v1.json` contains deterministic,
+  truth-labelled fictional records for risk, policy, claim, and reserve testing.
 - `src/pages/`, `src/layouts/`, and `src/components/` must not import either
   provider implementation directly.
 
 The architecture test in `tests/mode-parity.test.mjs` enforces this boundary.
+The fixture tests in `tests/insurance-lab.test.mjs` enforce synthetic provenance,
+referential integrity, numerical bounds, and RealDeal fail-closed behavior.
+
+The `/lab` route provides an underwriting and portfolio stress laboratory. Its
+Lloyd's adapter is a deliberately unconfigured interface boundary, not a live
+integration or endorsement. See `../docs/SYNTHETIC_INSURANCE_LAB.md`.
 
 ## Commands
 

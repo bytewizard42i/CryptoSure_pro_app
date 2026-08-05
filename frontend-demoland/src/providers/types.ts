@@ -324,6 +324,125 @@ export interface IAIAssistantProvider {
   // Phase 3: Full conversational assistant
 }
 
+// --- Synthetic Insurance Laboratory Types ---
+
+export type InsuranceLabDecision =
+  | 'illustrative-accept'
+  | 'illustrative-accept-with-conditions'
+  | 'illustrative-refer';
+
+export type InsuranceLabScenarioId =
+  | 'baseline'
+  | 'wallet-theft-surge'
+  | 'custodian-outage';
+
+export interface InsuranceLabMetadata {
+  datasetId: string;
+  version: string;
+  generatedAt: string;
+  asOfDate: string;
+  source: string;
+  purpose: string;
+  containsRealPeople: boolean;
+  containsRealPolicies: boolean;
+  containsRealClaims: boolean;
+  externalAffiliations: string[];
+  disclaimer: string;
+}
+
+export interface SyntheticRiskSubmission {
+  id: string;
+  applicantAlias: string;
+  world: PolicyWorld;
+  territory: string;
+  requestedLimit: number;
+  custodyModel: string;
+  securityScoreBand: ScoreBand;
+  evidenceCompleteness: number;
+  zeroKnowledgeProofState: string;
+  riskSignals: string[];
+  decision: InsuranceLabDecision;
+  annualPremiumIndication: number | null;
+}
+
+export interface SyntheticPolicyRecord {
+  id: string;
+  riskSubmissionId: string;
+  world: PolicyWorld;
+  territory: string;
+  coverageLimit: number;
+  writtenPremium: number;
+  earnedPremium: number;
+  status: 'active' | 'expired' | 'cancelled';
+  inceptionDate: string;
+  expiryDate: string;
+}
+
+export interface SyntheticClaimRecord {
+  id: string;
+  policyId: string;
+  event: ClaimEvent;
+  status: ClaimStatus;
+  amountClaimed: number;
+  incurredAmount: number;
+  paidAmount: number;
+  reserveAmount: number;
+  submittedAt: string;
+  lastUpdatedAt: string;
+  evidenceStage: string;
+}
+
+export interface SyntheticReserveSnapshot {
+  asOfDate: string;
+  availableCapital: number;
+  openClaimReserve: number;
+  activeExposure: number;
+  capitalToActiveExposureRatio: number;
+}
+
+export interface InsuranceLabDataset {
+  metadata: InsuranceLabMetadata;
+  riskSubmissions: SyntheticRiskSubmission[];
+  policies: SyntheticPolicyRecord[];
+  claims: SyntheticClaimRecord[];
+  reserveSnapshots: SyntheticReserveSnapshot[];
+}
+
+export interface InsuranceLabSummary {
+  scenarioId: InsuranceLabScenarioId;
+  scenarioLabel: string;
+  scenarioDescription: string;
+  totalWrittenPremium: number;
+  totalEarnedPremium: number;
+  totalActiveExposure: number;
+  totalIncurredLosses: number;
+  openClaimReserve: number;
+  availableCapital: number;
+  illustrativeLossRatio: number;
+  capitalToActiveExposureRatio: number;
+  averageEvidenceCompleteness: number;
+  acceptedRiskCount: number;
+  referredRiskCount: number;
+}
+
+export interface InsuranceMarketAdapterStatus {
+  adapterId: string;
+  displayName: string;
+  connectionState: 'connected-synthetic' | 'not-configured' | 'approved-sandbox' | 'production';
+  dataClassification: string;
+  capabilities: string[];
+  requiredConfiguration: string[];
+  disclaimer: string;
+}
+
+export interface IInsuranceLabProvider {
+  getDataset(): Promise<InsuranceLabDataset>;
+  runScenario(scenarioId: InsuranceLabScenarioId): Promise<InsuranceLabSummary>;
+  getAdapterStatuses(): Promise<InsuranceMarketAdapterStatus[]>;
+  // A future external adapter must remain product-specific, access-controlled,
+  // and fail closed until its credentials, terms, and evidence class are known.
+}
+
 // --- Master Provider Bundle ---
 
 export interface Providers {
@@ -336,6 +455,7 @@ export interface Providers {
   didz: IDidzProvider;
   agenticDID: IAgenticDIDProvider;
   ai: IAIAssistantProvider;
+  insuranceLab: IInsuranceLabProvider;
 }
 
 export type CSMode = 'demoland' | 'realdeal';

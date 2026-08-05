@@ -130,3 +130,27 @@ test("the guided public entry keeps DemoLand boundaries explicit", async () => {
   assert.match(tourSource, /does not currently offer, sell, quote, bind, or guarantee/);
   assert.doesNotMatch(tourSource, /providers\/(?:demoland|realdeal)/);
 });
+
+test("the insurance laboratory is routed through the shared provider boundary", async () => {
+  const applicationSource = await readFile(
+    path.join(sourceRoot, "App.tsx"),
+    "utf8",
+  );
+  const providerTypesSource = await readFile(
+    path.join(sourceRoot, "providers", "types.ts"),
+    "utf8",
+  );
+  const demoFactorySource = await readFile(
+    path.join(sourceRoot, "providers", "demoland", "index.ts"),
+    "utf8",
+  );
+  const realFactorySource = await readFile(
+    path.join(sourceRoot, "providers", "realdeal", "index.ts"),
+    "utf8",
+  );
+
+  assert.match(applicationSource, /path="\/lab"/);
+  assert.match(providerTypesSource, /insuranceLab: IInsuranceLabProvider/);
+  assert.match(demoFactorySource, /insuranceLab: new MockInsuranceLabProvider/);
+  assert.match(realFactorySource, /insuranceLab: createRealInsuranceLabProvider/);
+});

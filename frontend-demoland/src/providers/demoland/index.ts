@@ -8,6 +8,7 @@ import { MockPoolProvider } from './mock-pool';
 import { MockDidzProvider } from './mock-didz';
 import { MockAgenticDIDProvider } from './mock-agenticdid';
 import { MockAIAssistantProvider } from './mock-ai';
+import { MockInsuranceLabProvider } from './mock-insurance-lab';
 
 export function createDemoProviders(): Providers {
   return {
@@ -20,5 +21,6 @@ export function createDemoProviders(): Providers {
     didz: new MockDidzProvider(),
     agenticDID: new MockAgenticDIDProvider(),
     ai: new MockAIAssistantProvider(),
+    insuranceLab: new MockInsuranceLabProvider(),
   };
 }
