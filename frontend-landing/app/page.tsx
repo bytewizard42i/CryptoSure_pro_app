@@ -157,59 +157,7 @@ export default function Home() {
             Private inputs.
             <span>Verifiable outcomes.</span>
           </h1>
-
-          <p className="hero-description reveal-item reveal-delay-2">
-            Explore a proposed insurance experience for crypto wallets and
-            digital assets, designed to make scope, exclusions, and evidence
-            clearer while revealing the minimum necessary information.
-          </p>
-
-          <div className="hero-actions reveal-item reveal-delay-2">
-            <a className="hero-action-primary" href="#choose-your-path">
-              Explore proposed protection <ArrowIcon />
-            </a>
-            {productApplicationUrl && (
-              <a
-                className="hero-action-secondary"
-                href={productApplicationUrl}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Open DemoLand <ArrowIcon />
-              </a>
-            )}
-          </div>
-
-          <ul
-            className="user-first-guardrails reveal-item reveal-delay-3"
-            aria-label="CryptoSure exploration safeguards"
-          >
-            <li>
-              <span aria-hidden="true">01</span>
-              <strong>No wallet connection</strong>
-              <small>Explore before sharing account or asset information.</small>
-            </li>
-            <li>
-              <span aria-hidden="true">02</span>
-              <strong>Exclusions before pricing</strong>
-              <small>Understand the boundary before considering a tier.</small>
-            </li>
-            <li>
-              <span aria-hidden="true">03</span>
-              <strong>Minimum proof only</strong>
-              <small>Share only the fact an authorized decision requires.</small>
-            </li>
-          </ul>
         </div>
-
-        <a
-          className="scroll-cue"
-          href="#choose-your-path"
-          aria-label="Scroll to choose your CryptoSure path"
-        >
-          <span>Choose your path</span>
-          <span className="scroll-line" />
-        </a>
       </section>
 
       <section
@@ -293,7 +241,7 @@ export default function Home() {
                 className="path-product-title"
                 id="provider-insurance-path"
               >
-                Provide crypto insurance
+                Provide crypto insurance or liquidity
               </strong>
             </span>
             <span className="path-arrow" aria-hidden="true">
@@ -301,7 +249,7 @@ export default function Home() {
             </span>
             <nav
               className="path-category-list"
-              aria-label="Choose how to help provide crypto insurance"
+              aria-label="Choose how to help provide crypto insurance or liquidity"
             >
               <a className="path-category-link" href="#providers">
                 <span className="path-category-number">01</span>
@@ -314,8 +262,8 @@ export default function Home() {
               <a className="path-category-link" href="#providers">
                 <span className="path-category-number">02</span>
                 <span>
-                  <strong>Insurance capacity</strong>
-                  <small>Carrier, reinsurance, or reserve capital</small>
+                  <strong>Liquidity providers</strong>
+                  <small>Invest in us, the Sure thing</small>
                 </span>
                 <ArrowIcon />
               </a>
