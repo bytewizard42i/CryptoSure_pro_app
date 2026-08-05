@@ -867,9 +867,10 @@ footer {
 
 .decision-heading {
   align-items: end;
+  column-gap: 4rem;
   display: grid;
-  gap: 4rem;
   grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 0.5fr);
+  row-gap: 2rem;
 }
 
 .decision-heading .section-kicker {
@@ -1695,9 +1696,13 @@ footer > p {
   }
 
   .principle-intro,
-  .split-heading,
-  .decision-heading {
+  .split-heading {
     gap: 2rem;
+  }
+
+  .decision-heading {
+    column-gap: 2rem;
+    row-gap: 1rem;
   }
 
   .principle-intro h2,
