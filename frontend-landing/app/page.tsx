@@ -220,7 +220,7 @@ export default function Home() {
         <div className="decision-heading">
           <div>
             <div className="section-kicker">Start with your goal</div>
-            <h2 id="choose-your-path-heading">What brought you to CryptoSure?</h2>
+            <h2 id="choose-your-path-heading">What brings you to CryptoSure?</h2>
           </div>
           <p>
             Explore the protection concept anonymously, or see how underwriting,
