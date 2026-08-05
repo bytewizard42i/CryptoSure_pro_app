@@ -112,3 +112,21 @@ test("custom environment builds use React's production runtime", async () => {
   assert.match(viteConfiguration, /command === 'build'/);
   assert.doesNotMatch(viteConfiguration, /mode === 'production'/);
 });
+
+test("the guided public entry keeps DemoLand boundaries explicit", async () => {
+  const applicationSource = await readFile(
+    path.join(sourceRoot, "App.tsx"),
+    "utf8",
+  );
+  const tourSource = await readFile(
+    path.join(sourceRoot, "pages", "tour", "index.tsx"),
+    "utf8",
+  );
+
+  assert.match(applicationSource, /path="\/tour"/);
+  assert.match(tourSource, /No quote or policy/);
+  assert.match(tourSource, /No payment or wallet/);
+  assert.match(tourSource, /No submitted personal data/);
+  assert.match(tourSource, /does not currently offer, sell, quote, bind, or guarantee/);
+  assert.doesNotMatch(tourSource, /providers\/(?:demoland|realdeal)/);
+});

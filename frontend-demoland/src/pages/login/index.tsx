@@ -38,7 +38,7 @@ export function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="cs-login-shell dark min-h-screen bg-slate-950">
       <DemoModeBanner />
       <div className="flex items-center justify-center min-h-[calc(100vh-40px)] p-4">
         <div className="w-full max-w-md">
@@ -46,6 +46,12 @@ export function LoginPage() {
             <Shield className="h-12 w-12 text-violet-600 mx-auto mb-3" />
             <h1 className="text-2xl font-bold text-slate-900 dark:text-white">CryptoSure</h1>
             <p className="text-sm text-slate-500 mt-1">Insurance you can prove</p>
+            <Link
+              to="/tour"
+              className="mt-4 inline-flex text-sm font-semibold text-cyan-300 hover:text-cyan-200"
+            >
+              Start with the guided DemoLand tour →
+            </Link>
           </div>
 
           <div className="bg-white dark:bg-slate-900 rounded-xl shadow-lg p-6 cs-card">

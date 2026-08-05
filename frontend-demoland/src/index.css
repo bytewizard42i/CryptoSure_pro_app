@@ -79,3 +79,222 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 25px -5px rgba(0, 0, 0, 0.15);
 }
+
+/* CryptoSure's product surfaces share the cinematic public-site language while
+ * preserving a single component tree for DemoLand and RealDeal. */
+.cs-loading-screen,
+.cs-login-shell,
+.cs-product-shell,
+.cs-tour-shell {
+  background:
+    radial-gradient(circle at 78% 18%, rgba(86, 191, 255, 0.16), transparent 29rem),
+    radial-gradient(circle at 18% 72%, rgba(76, 255, 211, 0.1), transparent 30rem),
+    #02090d;
+}
+
+.cs-login-shell::before,
+.cs-tour-shell::before {
+  background-image:
+    linear-gradient(rgba(135, 255, 226, 0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(135, 255, 226, 0.04) 1px, transparent 1px);
+  background-size: 72px 72px;
+  content: "";
+  inset: 0;
+  mask-image: linear-gradient(to bottom, black, transparent 82%);
+  pointer-events: none;
+  position: fixed;
+}
+
+.cs-product-frame {
+  min-height: calc(100svh - 40px);
+  position: relative;
+}
+
+.cs-sidebar {
+  backdrop-filter: blur(20px);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 40px;
+  height: calc(100svh - 40px);
+  z-index: 30;
+}
+
+.cs-sidebar::after {
+  background: linear-gradient(180deg, rgba(113, 255, 221, 0.22), transparent 34%, rgba(111, 153, 255, 0.14));
+  content: "";
+  inset: 0 0 0 auto;
+  pointer-events: none;
+  position: absolute;
+  width: 1px;
+}
+
+.cs-main {
+  min-width: 0;
+}
+
+.cs-main > * {
+  margin-inline: auto;
+  max-width: 92rem;
+}
+
+.cs-journey {
+  background:
+    linear-gradient(135deg, rgba(122, 255, 225, 0.1), rgba(79, 118, 255, 0.06)),
+    rgba(8, 21, 28, 0.88);
+  border: 1px solid rgba(153, 255, 232, 0.16);
+  border-radius: 1.5rem;
+  box-shadow: 0 2rem 6rem rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  padding: clamp(1.25rem, 3vw, 2rem);
+  position: relative;
+}
+
+.cs-journey::after {
+  background: radial-gradient(circle, rgba(91, 228, 255, 0.18), transparent 67%);
+  content: "";
+  height: 18rem;
+  pointer-events: none;
+  position: absolute;
+  right: -7rem;
+  top: -8rem;
+  width: 18rem;
+}
+
+.cs-tour-shell {
+  color: #eefcf8;
+  min-height: 100svh;
+  overflow: hidden;
+  position: relative;
+}
+
+.cs-tour-content {
+  margin: 0 auto;
+  max-width: 94rem;
+  padding: clamp(2rem, 5vw, 5rem) clamp(1.25rem, 5vw, 5rem) 5rem;
+  position: relative;
+  z-index: 1;
+}
+
+.cs-tour-nav {
+  align-items: center;
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: clamp(4rem, 9vh, 8rem);
+}
+
+.cs-tour-hero {
+  align-items: end;
+  display: grid;
+  gap: clamp(2rem, 6vw, 7rem);
+  grid-template-columns: minmax(0, 1.15fr) minmax(19rem, 0.55fr);
+}
+
+.cs-tour-title {
+  font-size: clamp(4rem, 9vw, 9.8rem);
+  font-weight: 430;
+  letter-spacing: -0.08em;
+  line-height: 0.84;
+  margin: 1.75rem 0 2rem;
+  max-width: 9ch;
+}
+
+.cs-tour-title span {
+  background: linear-gradient(110deg, #a5ffe8 5%, #8fc8ff 72%, #d8b7ff);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  display: block;
+}
+
+.cs-tour-panel {
+  background: rgba(7, 20, 28, 0.78);
+  border: 1px solid rgba(155, 255, 231, 0.18);
+  border-radius: 1.7rem;
+  box-shadow: 0 2rem 7rem rgba(0, 0, 0, 0.38);
+  padding: clamp(1.4rem, 3vw, 2.25rem);
+  backdrop-filter: blur(18px);
+}
+
+.cs-tour-proof-grid {
+  display: grid;
+  gap: 0.85rem;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: clamp(4rem, 10vh, 8rem);
+}
+
+.cs-tour-proof {
+  background: rgba(9, 24, 32, 0.7);
+  border: 1px solid rgba(155, 255, 231, 0.12);
+  border-radius: 1.25rem;
+  min-height: 10rem;
+  padding: 1.35rem;
+}
+
+@media (max-width: 920px) {
+  .cs-product-frame {
+    display: block;
+  }
+
+  .cs-product-frame .cs-sidebar {
+    height: auto;
+    min-height: 0;
+    top: 40px;
+    width: 100%;
+  }
+
+  .cs-sidebar nav {
+    flex-direction: row;
+    overflow-x: auto;
+    scrollbar-width: thin;
+  }
+
+  .cs-sidebar nav a {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+
+  .cs-sidebar > div:last-child {
+    display: none;
+  }
+
+  .cs-main {
+    padding: 1rem;
+  }
+
+  .cs-tour-hero {
+    align-items: start;
+    grid-template-columns: 1fr;
+  }
+
+  .cs-tour-title {
+    font-size: clamp(4rem, 16vw, 7rem);
+  }
+}
+
+@media (max-width: 640px) {
+  .cs-tour-content {
+    padding-inline: 1rem;
+  }
+
+  .cs-tour-nav {
+    margin-bottom: 3.5rem;
+  }
+
+  .cs-tour-title {
+    font-size: clamp(3.8rem, 18vw, 5.8rem);
+  }
+
+  .cs-tour-proof-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

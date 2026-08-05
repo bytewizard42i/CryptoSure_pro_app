@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import { useProviders, useAuth } from '@/providers/context';
 import { formatCurrency, formatDate } from '@/lib/utils';
+import { GuidedJourney } from '@/components/GuidedJourney';
 import type { Policy, Claim, PoolStats, CreditScoreInfo } from '@/providers/types';
 
 export function Dashboard() {
@@ -54,6 +55,8 @@ export function Dashboard() {
         </h1>
         <p className="text-sm text-slate-500 mt-1">Your CryptoSure overview</p>
       </div>
+
+      <GuidedJourney />
 
       {/* Stats grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

@@ -27,11 +27,11 @@ export function CSLayout() {
   };
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950">
+    <div className="cs-product-shell dark min-h-screen bg-slate-950">
       <DemoModeBanner />
-      <div className="flex">
+      <div className="cs-product-frame flex">
         {/* Sidebar */}
-        <aside className="w-64 shrink-0 border-r border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 min-h-[calc(100vh-40px)]">
+        <aside className="cs-sidebar w-64 shrink-0 border-r border-slate-800 bg-slate-950/90 min-h-[calc(100vh-40px)]">
           <div className="flex items-center gap-2 px-4 py-4 border-b border-slate-200 dark:border-slate-800">
             <Shield className="h-6 w-6 text-violet-600" />
             <span className="font-bold text-lg text-slate-900 dark:text-white">CryptoSure</span>
@@ -93,7 +93,7 @@ export function CSLayout() {
         </aside>
 
         {/* Main content */}
-        <main className="flex-1 p-6 overflow-auto">
+        <main className="cs-main flex-1 p-6 overflow-auto">
           <Outlet />
         </main>
       </div>

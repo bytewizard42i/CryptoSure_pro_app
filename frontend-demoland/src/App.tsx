@@ -17,6 +17,11 @@ const SignupPage = lazy(() =>
     default: pageModule.SignupPage,
   })),
 );
+const TourPage = lazy(() =>
+  import('./pages/tour').then((pageModule) => ({
+    default: pageModule.TourPage,
+  })),
+);
 const Dashboard = lazy(() =>
   import('./pages/dashboard').then((pageModule) => ({
     default: pageModule.Dashboard,
@@ -56,7 +61,7 @@ const AIAssistantPage = lazy(() =>
 function PageLoadingFallback() {
   return (
     <main
-      className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-700 dark:bg-slate-950 dark:text-slate-200"
+      className="cs-loading-screen flex min-h-screen items-center justify-center px-6 text-slate-200"
       role="status"
     >
       <div className="text-center">
@@ -78,6 +83,7 @@ function App() {
           <Routes>
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
+            <Route path="/tour" element={<TourPage />} />
             <Route element={<AuthGuard><CSLayout /></AuthGuard>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
