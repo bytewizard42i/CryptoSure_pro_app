@@ -85,7 +85,7 @@ main {
 }
 
 .background-ad-image {
-  animation: background-arrival 3s cubic-bezier(0.22, 1, 0.36, 1) both;
+  animation: background-arrival 4s cubic-bezier(0.22, 1, 0.36, 1) both;
   height: 100%;
   object-fit: cover;
   object-position: center;
@@ -101,7 +101,7 @@ main {
 }
 
 .background-wash {
-  animation: background-wash-arrival 950ms ease-out 2.15s both;
+  animation: background-wash-arrival 950ms ease-out 3.15s both;
   background:
     radial-gradient(circle at 80% 40%, rgba(100, 168, 255, 0.11), transparent 30%),
     radial-gradient(circle at 22% 38%, rgba(118, 247, 213, 0.09), transparent 28%),
@@ -112,7 +112,7 @@ main {
 }
 
 .background-grid {
-  animation: background-grid-arrival 900ms ease-out 2.35s both;
+  animation: background-grid-arrival 900ms ease-out 3.35s both;
   background-image:
     linear-gradient(rgba(174, 255, 234, 0.028) 1px, transparent 1px),
     linear-gradient(90deg, rgba(174, 255, 234, 0.028) 1px, transparent 1px);
@@ -125,7 +125,7 @@ main {
 
 .site-header {
   align-items: center;
-  animation: chrome-arrival 650ms ease-out 2.6s both;
+  animation: chrome-arrival 650ms ease-out 3.6s both;
   backdrop-filter: blur(14px);
   background: linear-gradient(to bottom, rgba(2, 11, 15, 0.34), rgba(2, 11, 15, 0.03));
   border-bottom: 1px solid rgba(207, 255, 242, 0.08);
@@ -759,7 +759,7 @@ main {
 
 .scroll-cue {
   align-items: center;
-  animation: chrome-arrival 650ms ease-out 3.4s both;
+  animation: chrome-arrival 650ms ease-out 4.4s both;
   bottom: 2.25rem;
   display: flex;
   gap: 1rem;
@@ -1326,19 +1326,19 @@ footer > p {
 
 .reveal-item {
   animation: reveal-up 800ms cubic-bezier(0.22, 1, 0.36, 1) both;
-  animation-delay: 2.65s;
+  animation-delay: 3.65s;
 }
 
 .reveal-delay-1 {
-  animation-delay: 2.85s;
+  animation-delay: 3.85s;
 }
 
 .reveal-delay-2 {
-  animation-delay: 3.05s;
+  animation-delay: 4.05s;
 }
 
 .reveal-delay-3 {
-  animation-delay: 3.25s;
+  animation-delay: 4.25s;
 }
 
 @keyframes background-arrival {
@@ -1672,7 +1672,7 @@ footer > p {
  */
 
 .demo-land-banner {
-  animation: chrome-arrival 550ms ease-out 2.5s both;
+  animation: chrome-arrival 550ms ease-out 3.5s both;
   align-items: center;
   background: #f6aa24;
   color: #241600;
