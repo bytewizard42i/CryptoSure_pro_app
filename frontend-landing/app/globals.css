@@ -156,26 +156,27 @@ main {
 
 .wordmark-mark {
   align-items: center;
-  background: var(--teal);
-  border-radius: 50%;
-  color: #03110f;
+  background: linear-gradient(145deg, #ffffdc 0%, #dfff72 46%, #f5bd2d 100%);
+  clip-path: polygon(50% 0%, 93% 15%, 84% 68%, 50% 100%, 16% 68%, 7% 15%);
+  color: #182000;
   display: inline-flex;
+  filter: drop-shadow(0 0 0.55rem rgba(223, 255, 114, 0.52));
   font-family: var(--font-geist-mono), monospace;
-  font-size: 0.74rem;
-  font-weight: 800;
-  height: 1.75rem;
+  font-size: 0.5rem;
+  font-weight: 900;
+  height: 2rem;
   justify-content: center;
+  letter-spacing: -0.06em;
   position: relative;
-  width: 1.75rem;
+  width: 1.8rem;
 }
 
 .wordmark-mark::after {
-  border: 1px solid rgba(3, 17, 15, 0.48);
-  border-radius: 50%;
+  border: 1px solid rgba(24, 32, 0, 0.48);
+  clip-path: inherit;
   content: "";
-  height: 1.15rem;
+  inset: 0.2rem;
   position: absolute;
-  width: 1.15rem;
 }
 
 .domain-tag {

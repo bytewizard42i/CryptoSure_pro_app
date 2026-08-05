@@ -118,7 +118,7 @@ export default function Home() {
 
       <header className="site-header">
         <a className="wordmark" href="#top" aria-label="CryptoSure home">
-          <span className="wordmark-mark">C</span>
+          <span className="wordmark-mark">CSI</span>
           <span>CryptoSure</span>
           <span className="domain-tag">.pro</span>
         </a>
@@ -522,7 +522,7 @@ export default function Home() {
 
       <footer>
         <div className="footer-wordmark">
-          <span className="wordmark-mark">C</span>
+          <span className="wordmark-mark">CSI</span>
           <span>CryptoSure</span>
         </div>
         <p>
