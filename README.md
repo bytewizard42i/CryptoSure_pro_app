@@ -113,6 +113,8 @@ Full detail in [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md).
 
 See [`docs/DIDzM_REUSE.md`](docs/DIDzM_REUSE.md) and [`docs/ECOSYSTEM_COORDINATION.md`](docs/ECOSYSTEM_COORDINATION.md).
 
+This project is included in the private [EnterpriseZK Labs repository landscape](https://github.com/bytewizard42i/DIDzMonolith/blob/main/DIDzMonolith-docs/ENTERPRISEZK_LABS_REPOSITORY_LANDSCAPE.md).
+
 ---
 
 ## Repo layout
