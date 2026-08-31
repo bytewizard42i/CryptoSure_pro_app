@@ -10,6 +10,12 @@
 
 Part of the **[DIDz ecosystem](https://github.com/bytewizard42i/DIDzMonolith)**.
 
+### 🎬 Overview Video
+
+[![CryptoSure Overview](https://img.youtube.com/vi/tHVLV4CKVSU/maxresdefault.jpg)](https://youtu.be/tHVLV4CKVSU)
+
+**[CryptoSure — The World's First Retail & Commercial Crypto Insurance](https://youtu.be/tHVLV4CKVSU)**
+
 ---
 
 ## What Is CryptoSure?
