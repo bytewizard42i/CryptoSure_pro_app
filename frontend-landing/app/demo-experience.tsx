@@ -156,8 +156,10 @@ const riskScenarios = [
 export function DemoLandBanner() {
   return (
     <div className="demo-land-banner" role="status">
-      <span aria-hidden="true">◆</span>
-      <strong>DemoLand</strong>
+      <span className="demo-land-label">
+        <span aria-hidden="true">◆</span>
+        <strong>Demo mode</strong>
+      </span>
       <span>Pre-launch simulation. No insurance is offered or sold.</span>
     </div>
   );

@@ -128,7 +128,43 @@ test("the guided public entry keeps DemoLand boundaries explicit", async () => {
   assert.match(tourSource, /No payment or wallet/);
   assert.match(tourSource, /No submitted personal data/);
   assert.match(tourSource, /does not currently offer, sell, quote, bind, or guarantee/);
+  assert.match(tourSource, /useSearchParams/);
+  assert.match(tourSource, /audience === 'provider'/);
+  assert.match(tourSource, /navigate\(isProviderTour \? '\/pool' : '\/'\)/);
   assert.doesNotMatch(tourSource, /providers\/(?:demoland|realdeal)/);
+});
+
+test("the auto-entry route performs simulated login and redirects", async () => {
+  const applicationSource = await readFile(
+    path.join(sourceRoot, "App.tsx"),
+    "utf8",
+  );
+  const enterSource = await readFile(
+    path.join(sourceRoot, "pages", "enter", "index.tsx"),
+    "utf8",
+  );
+
+  assert.match(applicationSource, /path="\/enter"/);
+  assert.match(enterSource, /useSearchParams/);
+  assert.match(enterSource, /DESTINATION_ROUTES/);
+  assert.match(enterSource, /dashboard/);
+  assert.match(enterSource, /onboarding/);
+  assert.match(enterSource, /policies/);
+  assert.match(enterSource, /claims/);
+  assert.match(enterSource, /pool/);
+  assert.match(enterSource, /login\('email', 'demo@cryptosure\.app'\)/);
+  assert.match(enterSource, /DemoModeBanner/);
+  assert.doesNotMatch(enterSource, /providers\/(?:demoland|realdeal)/);
+});
+
+test("the shared truth label stays prominent in the upper-right corner", async () => {
+  const bannerSource = await readFile(
+    path.join(sourceRoot, "components", "DemoModeBanner.tsx"),
+    "utf8",
+  );
+
+  assert.match(bannerSource, /fixed right-4 top-4/);
+  assert.match(bannerSource, /DEMO MODE/);
 });
 
 test("the insurance laboratory is routed through the shared provider boundary", async () => {

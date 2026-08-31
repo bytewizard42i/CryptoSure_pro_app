@@ -59,13 +59,24 @@ function ArrowIcon() {
   return <span aria-hidden="true">↗</span>;
 }
 
-function resolveProductApplicationUrl(): string | null {
+type DemoLandAudience = "customer" | "provider";
+type DemoLandDestination =
+  | "dashboard"
+  | "onboarding"
+  | "policies"
+  | "claims"
+  | "pool";
+
+function resolveProductApplicationUrl(
+  audience: DemoLandAudience,
+  destination?: DemoLandDestination,
+): string | null {
   const configuredProductApplicationUrl =
     process.env.NEXT_PUBLIC_CRYPTOSURE_APP_URL?.trim();
   const isDevelopmentEnvironment = process.env.NODE_ENV !== "production";
   const candidateUrl =
     configuredProductApplicationUrl ||
-    (isDevelopmentEnvironment ? "http://127.0.0.1:3014/login" : null);
+    (isDevelopmentEnvironment ? "http://127.0.0.1:3014/tour" : null);
 
   if (!candidateUrl) {
     return null;
@@ -86,6 +97,16 @@ function resolveProductApplicationUrl(): string | null {
       return null;
     }
 
+    // When a destination is provided, send the visitor straight to the
+    // auto-entry route that performs simulated login and redirects. Without a
+    // destination, fall back to the guided tour with the audience parameter.
+    if (destination) {
+      parsedUrl.pathname = "/enter";
+      parsedUrl.searchParams.set("dest", destination);
+    } else {
+      parsedUrl.pathname = "/tour";
+      parsedUrl.searchParams.set("audience", audience);
+    }
     return parsedUrl.toString();
   } catch {
     // Invalid configuration fails closed by hiding the product doorway.
@@ -94,7 +115,12 @@ function resolveProductApplicationUrl(): string | null {
 }
 
 export default function Home() {
-  const productApplicationUrl = resolveProductApplicationUrl();
+  const customerDashboardUrl = resolveProductApplicationUrl("customer", "dashboard");
+  const customerOnboardingUrl = resolveProductApplicationUrl("customer", "onboarding");
+  const customerPoliciesUrl = resolveProductApplicationUrl("customer", "policies");
+  const providerPoolUrl = resolveProductApplicationUrl("provider", "pool");
+  const providerPoliciesUrl = resolveProductApplicationUrl("provider", "policies");
+  const providerClaimsUrl = resolveProductApplicationUrl("provider", "claims");
 
   return (
     <main>
@@ -130,10 +156,10 @@ export default function Home() {
         </nav>
 
         <div className="header-actions">
-          {productApplicationUrl && (
+          {customerDashboardUrl && (
             <a
               className="header-preview-action"
-              href={productApplicationUrl}
+              href={customerDashboardUrl}
               target="_blank"
               rel="noreferrer"
             >
@@ -175,6 +201,24 @@ export default function Home() {
           </p>
         </div>
 
+        <ul className="user-first-guardrails" aria-label="DemoLand privacy safeguards">
+          <li>
+            <span>01</span>
+            <strong>No wallet connection</strong>
+            <small>Explore both journeys without exposing an address or balance.</small>
+          </li>
+          <li>
+            <span>02</span>
+            <strong>Exclusions before pricing</strong>
+            <small>See the proposed boundaries before any illustrative premium.</small>
+          </li>
+          <li>
+            <span>03</span>
+            <strong>Minimum proof only</strong>
+            <small>Understand how eligibility can be verified without full disclosure.</small>
+          </li>
+        </ul>
+
         <div className="path-chooser" aria-label="Choose your CryptoSure path">
           <section
             className="path-button path-button-primary"
@@ -182,15 +226,17 @@ export default function Home() {
           >
             <a
               className="path-card-link"
-              href="#customers"
-              aria-label="Explore crypto insurance"
+              href={customerDashboardUrl ?? "#customers"}
+              aria-label="Open customer DemoLand walkthrough: Crypto insurance"
+              target={customerDashboardUrl ? "_blank" : undefined}
+              rel={customerDashboardUrl ? "noreferrer" : undefined}
             />
             <span className="path-card-topline">
               <span className="path-index">01</span>
               <span>For people and businesses</span>
             </span>
             <span className="path-message">
-              <span className="path-intent">“I want…”</span>
+              <span className="path-intent">“I want”</span>
               <strong
                 className="path-product-title"
                 id="customer-protection-path"
@@ -202,7 +248,7 @@ export default function Home() {
               className="path-category-list"
               aria-label="Choose who needs crypto protection"
             >
-              <a className="path-category-link" href="#coverage-explorer">
+              <a className="path-category-link" href={customerDashboardUrl ?? "#coverage-explorer"}>
                 <span className="path-category-number">01</span>
                 <span>
                   <strong>Personal</strong>
@@ -210,7 +256,7 @@ export default function Home() {
                 </span>
                 <ArrowIcon />
               </a>
-              <a className="path-category-link" href="#demo-interest">
+              <a className="path-category-link" href={customerOnboardingUrl ?? "#demo-interest"}>
                 <span className="path-category-number">02</span>
                 <span>
                   <strong>Business</strong>
@@ -218,7 +264,7 @@ export default function Home() {
                 </span>
                 <ArrowIcon />
               </a>
-              <a className="path-category-link" href="#partner-paths">
+              <a className="path-category-link" href={customerPoliciesUrl ?? "#partner-paths"}>
                 <span className="path-category-number">03</span>
                 <span>
                   <strong>Crypto business</strong>
@@ -234,15 +280,17 @@ export default function Home() {
           >
             <a
               className="path-card-link"
-              href="#providers"
-              aria-label="Explore providing crypto insurance or liquidity"
+              href={providerPoolUrl ?? "#providers"}
+              aria-label="Open provider DemoLand walkthrough: To provide insurance or liquidity"
+              target={providerPoolUrl ? "_blank" : undefined}
+              rel={providerPoolUrl ? "noreferrer" : undefined}
             />
             <span className="path-card-topline">
               <span className="path-index">02</span>
               <span>For insurers and protection partners</span>
             </span>
             <span className="path-message">
-              <span className="path-intent">“I{"\u00a0"}want…”</span>
+              <span className="path-intent">“I want”</span>
               <strong
                 className="path-product-title"
                 id="provider-insurance-path"
@@ -256,7 +304,7 @@ export default function Home() {
             >
               <a
                 className="path-category-link"
-                href="#partnership-tab-underwriter"
+                href={providerPoliciesUrl ?? "#partnership-tab-underwriter"}
               >
                 <span className="path-category-number">01</span>
                 <span>
@@ -265,7 +313,7 @@ export default function Home() {
                 </span>
                 <ArrowIcon />
               </a>
-              <a className="path-category-link" href="#partnership-tab-capital">
+              <a className="path-category-link" href={providerPoolUrl ?? "#partnership-tab-capital"}>
                 <span className="path-category-number">02</span>
                 <span>
                   <strong>Liquidity providers</strong>
@@ -275,7 +323,7 @@ export default function Home() {
               </a>
               <a
                 className="path-category-link"
-                href="#partnership-tab-distribution"
+                href={providerClaimsUrl ?? "#partnership-tab-distribution"}
               >
                 <span className="path-category-number">03</span>
                 <span>

@@ -44,7 +44,22 @@ test("fails closed when the product application destination is not approved", as
   assert.match(landingPageSource, /parsedUrl\.protocol === "https:"/);
   assert.match(landingPageSource, /127\.0\.0\.1/);
   assert.match(landingPageSource, /Invalid configuration fails closed/);
+  assert.match(landingPageSource, /searchParams\.set\("dest", destination\)/);
+  assert.match(landingPageSource, /resolveProductApplicationUrl\("customer", "dashboard"\)/);
+  assert.match(landingPageSource, /resolveProductApplicationUrl\("provider", "pool"\)/);
   assert.doesNotMatch(landingPageSource, /<iframe/i);
+});
+
+test("maps all eight landing buttons to direct DemoLand destinations", async () => {
+  const landingPageSource = await readProjectFile("app/page.tsx");
+
+  assert.match(landingPageSource, /customerDashboardUrl/);
+  assert.match(landingPageSource, /customerOnboardingUrl/);
+  assert.match(landingPageSource, /customerPoliciesUrl/);
+  assert.match(landingPageSource, /providerPoolUrl/);
+  assert.match(landingPageSource, /providerPoliciesUrl/);
+  assert.match(landingPageSource, /providerClaimsUrl/);
+  assert.match(landingPageSource, /\/enter/);
 });
 
 test("keeps excluded risk scenarios explicit before price selection", async () => {

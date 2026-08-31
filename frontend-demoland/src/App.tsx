@@ -22,6 +22,11 @@ const TourPage = lazy(() =>
     default: pageModule.TourPage,
   })),
 );
+const EnterPage = lazy(() =>
+  import('./pages/enter').then((pageModule) => ({
+    default: pageModule.EnterPage,
+  })),
+);
 const Dashboard = lazy(() =>
   import('./pages/dashboard').then((pageModule) => ({
     default: pageModule.Dashboard,
@@ -89,6 +94,7 @@ function App() {
             <Route path="/login" element={<LoginPage />} />
             <Route path="/signup" element={<SignupPage />} />
             <Route path="/tour" element={<TourPage />} />
+            <Route path="/enter" element={<EnterPage />} />
             <Route element={<AuthGuard><CSLayout /></AuthGuard>}>
               <Route path="/" element={<Dashboard />} />
               <Route path="/onboarding" element={<OnboardingPage />} />
